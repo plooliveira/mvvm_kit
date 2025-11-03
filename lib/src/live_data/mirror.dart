@@ -1,0 +1,137 @@
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+
+import 'package:mvvm_kit/src/live_data/live_data.dart';
+
+T _liveDataTransform<T>(LiveData<T> data) {
+  return data.value;
+}
+
+T _valueNotifierTransform<T>(ValueNotifier<T> data) {
+  return data.value;
+}
+
+class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
+  final B base;
+  final T Function(B) onTransform;
+
+  @override
+  T get value => _value;
+
+  late T _value;
+
+  NotifierData(this.base, {required T Function(B) transform})
+    : onTransform = transform,
+      super(transform(base)) {
+    _value = onTransform(base);
+    base.addListener(_onBaseChanged);
+  }
+
+  @override
+  void reload() {
+    _onBaseChanged();
+  }
+
+  void _onBaseChanged() {
+    _value = onTransform(base);
+    notifyIfChanged();
+  }
+
+  @override
+  void dispose() {
+    base.removeListener(_onBaseChanged);
+    super.dispose();
+  }
+}
+
+class LiveDataMirror<T> extends NotifierData<T, LiveData<T>> {
+  LiveDataMirror(LiveData<T> base, {T Function(LiveData<T>)? transform})
+    : super(base, transform: transform ?? _liveDataTransform) {
+    changeDetector = base.changeDetector;
+  }
+}
+
+class TransformedLiveDataMirror<T, S, B extends LiveData<S>>
+    extends NotifierData<T, B> {
+  TransformedLiveDataMirror(super.base, {required super.transform});
+}
+
+class ValueNotifierData<T> extends NotifierData<T, ValueNotifier<T>> {
+  ValueNotifierData(super.base, {T Function(ValueNotifier<T>)? transform})
+    : super(transform: transform ?? _valueNotifierTransform);
+}
+
+class TransformedValueNotifierData<T, B extends ValueNotifier>
+    extends NotifierData<T, B> {
+  TransformedValueNotifierData(super.base, {required super.transform});
+}
+
+T? _hardCast<T, D>(D? value) => value == null ? null : value as T;
+
+class StreamData<T, D, S extends Stream<D>> extends LiveData<T?> {
+  final S base;
+  final T? Function(D?) onTransform;
+
+  @override
+  T? get value => _value;
+
+  late T? _value;
+
+  StreamSubscription<D>? _subscription;
+
+  StreamData(this.base, {T? Function(D?)? transform, D? current, T? value})
+    : onTransform = transform ?? _hardCast,
+      super(value ?? transform?.call(current)) {
+    _value = value ?? onTransform(current);
+    _subscription = base.listen(_onBaseChanged);
+  }
+
+  void _onBaseChanged(D value) {
+    _value = onTransform(value);
+    notifyIfChanged();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _subscription = null;
+    super.dispose();
+  }
+}
+
+class HotswapLiveData<T> extends LiveData<T> {
+  late LiveData<T> _base;
+
+  @override
+  T get value => _base.value;
+
+  HotswapLiveData(LiveData<T> base) : super(base.value) {
+    _base = base;
+    changeDetector = base.changeDetector;
+    _base.subscribe(_onBaseChanged);
+  }
+
+  void hotswap(LiveData<T> base, {bool disposeOld = true}) {
+    if (_base == base) {
+      return;
+    }
+    _base.unsubscribe(_onBaseChanged);
+    if (disposeOld) {
+      _base.dispose();
+    }
+    _base = base;
+    changeDetector = base.changeDetector;
+    _base.subscribe(_onBaseChanged);
+    notifyIfChanged();
+  }
+
+  void _onBaseChanged(T value) {
+    notifyIfChanged();
+  }
+
+  @override
+  void dispose() {
+    _base.unsubscribe(_onBaseChanged);
+    super.dispose();
+  }
+}

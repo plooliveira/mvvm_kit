@@ -82,7 +82,7 @@ class _CounterPageState extends ViewState<CounterViewModel, CounterPage> {
 }
 ```
 
-### Advanced Example
+### Listen to multiple LiveData
 
 You can use `GroupWatch` to listen to multiple `LiveData` objects at once. You can also use the `onActive` and `onInactive` callbacks in your `ViewModel` to perform actions when the view becomes active or inactive.
 
@@ -112,7 +112,7 @@ class _AdvancedPageState extends ViewState<GroupViewModel, AdvancedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Advanced'),
+        title: const Text('Group Watch Example'),
       ),
       body: Center(
         child: GroupWatch(

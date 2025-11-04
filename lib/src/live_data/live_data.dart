@@ -16,6 +16,9 @@ abstract class LiveData<T> extends ChangeNotifier {
 
   final List<Function(T)> _subscribers = [];
 
+  @visibleForTesting
+  List<Function(T)> get subscribers => _subscribers;
+
   T get value;
 
   T? _lastNotifyCheck;
@@ -116,7 +119,7 @@ extension MutableDataScope on DataScope {
   }
 }
 
-extension ListLiveData<D, L extends Iterable<D>> on LiveData<L> {
+extension ListLiveData<D> on LiveData<Iterable<D>> {
   bool get isEmpty => value.isEmpty;
 
   bool get isNotEmpty => value.isNotEmpty;
@@ -134,7 +137,7 @@ extension ListLiveData<D, L extends Iterable<D>> on LiveData<L> {
       AutoDisposeFilter(this, check);
 
   LiveData<Iterable<D>> notNull() =>
-      AutoDisposeFilter(this, (value) => value != null);
+      AutoDisposeFilter<D>(this, (value) => value != null);
 }
 
 bool _defaultChangeDetector<T>(T to, T from) {
@@ -146,6 +149,7 @@ bool _defaultChangeDetector<T>(T to, T from) {
         return true;
       }
     }
+    return false;
   }
 
   if (to is Map && from is Map) {
@@ -156,6 +160,7 @@ bool _defaultChangeDetector<T>(T to, T from) {
         return true;
       }
     }
+    return false;
   }
 
   if (to is Iterable && from is Iterable) {
@@ -167,6 +172,7 @@ bool _defaultChangeDetector<T>(T to, T from) {
         return true;
       }
     }
+    return false;
   }
 
   return to != from;

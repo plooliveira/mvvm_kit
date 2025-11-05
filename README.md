@@ -28,7 +28,7 @@ Here is a simple example of how to use the package to create a counter applicati
 **1. Create a `ViewModel`**
 
 ```dart
-import 'package:mvvm_kit/live_viewmodel.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 class CounterViewModel extends ViewModel {
   final _counter = observable(0);
@@ -45,17 +45,17 @@ class CounterViewModel extends ViewModel {
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:mvvm_kit/live_viewmodel.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 import 'counter_viewmodel.dart';
 
-class CounterPage extends ViewWidget<CounterViewModel> {
-  CounterPage({super.key}) : super(viewModel: CounterViewModel());
+class CounterView extends ViewWidget<CounterViewModel> {
+  CounterView({super.key}) : super(viewModel: CounterViewModel());
 
   @override
-  State<CounterPage> createState() => _CounterPageState();
+  State<CounterView> createState() => _CounterViewState();
 }
 
-class _CounterPageState extends ViewState<CounterViewModel, CounterPage> {
+class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +87,7 @@ class _CounterPageState extends ViewState<CounterViewModel, CounterPage> {
 You can use `GroupWatch` to listen to multiple `LiveData` objects at once. You can also use the `onActive` and `onInactive` callbacks in your `ViewModel` to perform actions when the view becomes active or inactive.
 
 ```dart
-import 'package:mvvm_kit/live_viewmodel.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 class GroupViewModel extends ViewModel {
   final name = observable('John Doe');
@@ -97,17 +97,17 @@ class GroupViewModel extends ViewModel {
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:mvvm_kit/live_viewmodel.dart';
-import 'advanced_viewmodel.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
+import 'group_viewmodel.dart';
 
-class AdvancedPage extends ViewWidget<GroupViewModel> {
-  AdvancedPage({super.key}) : super(viewModel: GroupViewModel());
+class PersonView extends ViewWidget<GroupViewModel> {
+  PersonView({super.key}) : super(viewModel: GroupViewModel());
 
   @override
-  State<AdvancedPage> createState() => _AdvancedPageState();
+  State<PersonView> createState() => _PersonViewState();
 }
 
-class _AdvancedPageState extends ViewState<GroupViewModel, AdvancedPage> {
+class _PersonViewState extends ViewState<GroupViewModel, PersonView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

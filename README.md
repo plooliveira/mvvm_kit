@@ -89,7 +89,7 @@ You can use `GroupWatch` to listen to multiple `LiveData` objects at once. You c
 ```dart
 import 'package:mvvm_kit/mvvm_kit.dart';
 
-class GroupViewModel extends ViewModel {
+class PersonViewModel extends ViewModel {
   final name = observable('John Doe');
   final age = observable(30);
 }
@@ -100,14 +100,14 @@ import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'group_viewmodel.dart';
 
-class PersonView extends ViewWidget<GroupViewModel> {
-  PersonView({super.key}) : super(viewModel: GroupViewModel());
+class PersonView extends ViewWidget<PersonViewModel> {
+  PersonView({super.key}) : super(viewModel: PersonViewModel());
 
   @override
   State<PersonView> createState() => _PersonViewState();
 }
 
-class _PersonViewState extends ViewState<GroupViewModel, PersonView> {
+class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

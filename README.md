@@ -65,9 +65,9 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
       body: Center(
         child: Watch(
           viewModel.counter,
-          builder: (context) {
+          builder: (context, value) {
             return Text(
-              '${viewModel.counter.value}',
+              '$value',
               style: Theme.of(context).textTheme.headlineMedium,
             );
           },
@@ -128,8 +128,11 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
         child: GroupWatch(
           [viewModel.name, viewModel.age],
           builder: (context) {
+            final name = viewModel.name.value;
+            final age = viewModel.age.value;
+
             return Text(
-              '${viewModel.name.value} is ${viewModel.age.value} years old.',
+              '$name is $age years old.',
               style: Theme.of(context).textTheme.headlineMedium,
             );
           },
@@ -139,4 +142,3 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
   }
 }
 ```
-

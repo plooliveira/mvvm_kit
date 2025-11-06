@@ -64,10 +64,8 @@ extension MutableDataScope on DataScope {
 
     source.addListener(listener);
 
-    // Callback que remove listener e garante dispose do mirror quando o scope for limpo.
     final cleanup = _DisposeCallback(() {
       source.removeListener(listener);
-      // remove mirror da lista do scope e dispose se ainda estiver lá
       if (remove(mirror)) {
         mirror.dispose();
       }

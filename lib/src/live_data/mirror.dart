@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 
-import 'package:mvvm_kit/src/live_data/live_data.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 T _liveDataTransform<T>(LiveData<T> data) {
   return data.value;

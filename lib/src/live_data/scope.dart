@@ -1,6 +1,7 @@
 import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
+
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 class DataScope {
   final LinkedHashSet<ChangeNotifier> _items = LinkedHashSet();
@@ -47,4 +48,46 @@ class DataScope {
   }
 
   DataScope child() => DataScope(parent: this);
+}
+
+extension MutableDataScope on DataScope {
+  MutableLiveData<T> mutable<T>(T start) {
+    return add(MutableLiveData(start));
+  }
+
+  MutableLiveData<T> bridgeFrom<T>(LiveData<T> source) {
+    final mirror = add(MutableLiveData<T>(source.value));
+
+    void listener() {
+      mirror.value = source.value;
+    }
+
+    source.addListener(listener);
+
+    // Callback que remove listener e garante dispose do mirror quando o scope for limpo.
+    final cleanup = _DisposeCallback(() {
+      source.removeListener(listener);
+      // remove mirror da lista do scope e dispose se ainda estiver lá
+      if (remove(mirror)) {
+        mirror.dispose();
+      }
+    });
+
+    add(cleanup);
+    return mirror;
+  }
+}
+
+class _DisposeCallback extends ChangeNotifier {
+  final VoidCallback _onDispose;
+  _DisposeCallback(this._onDispose);
+
+  @override
+  void dispose() {
+    try {
+      _onDispose();
+    } finally {
+      super.dispose();
+    }
+  }
 }

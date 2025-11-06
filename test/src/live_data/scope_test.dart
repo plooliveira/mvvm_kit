@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/foundation.dart'; // For ChangeNotifier
+import 'package:flutter/foundation.dart';
 
-import 'package:mvvm_kit/src/live_data/scope.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 // A simple mock ChangeNotifier for testing purposes
 class MockChangeNotifier extends ChangeNotifier {
@@ -53,7 +53,10 @@ void main() {
       expect(scope.items, contains(mockItem1));
       expect(scope.remove(mockItem1), isTrue);
       expect(scope.items, isEmpty);
-      expect(scope.remove(mockItem1), isFalse); // Trying to remove again should return false
+      expect(
+        scope.remove(mockItem1),
+        isFalse,
+      ); // Trying to remove again should return false
     });
 
     test('should not add duplicate items', () {
@@ -73,9 +76,15 @@ void main() {
       scope.clean(mockItem1);
 
       expect(mockItem1.isDisposed, isTrue); // Verify dispose was called
-      expect(scope.items, isNot(contains(mockItem1))); // Verify it's removed from scope
+      expect(
+        scope.items,
+        isNot(contains(mockItem1)),
+      ); // Verify it's removed from scope
       expect(scope.items.length, 1);
-      expect(scope.items, contains(mockItem2)); // Other item should still be there
+      expect(
+        scope.items,
+        contains(mockItem2),
+      ); // Other item should still be there
     });
   });
 
@@ -104,7 +113,8 @@ void main() {
     });
 
     test('dispose should call dispose on child scopes and their items', () {
-      final childScope = scope.child(); // This adds childScope to scope.children
+      final childScope = scope
+          .child(); // This adds childScope to scope.children
       final childItem = MockChangeNotifier();
       childScope.add(childItem);
 
@@ -118,22 +128,25 @@ void main() {
       expect(childScope.items, isEmpty); // Child's items should be cleared
     });
 
-    test('dispose should call dispose on nested child scopes (grandchildren) and their items', () {
-      final childScope = scope.child();
-      final grandChildScope = childScope.child();
-      final grandChildItem = MockChangeNotifier();
-      grandChildScope.add(grandChildItem);
+    test(
+      'dispose should call dispose on nested child scopes (grandchildren) and their items',
+      () {
+        final childScope = scope.child();
+        final grandChildScope = childScope.child();
+        final grandChildItem = MockChangeNotifier();
+        grandChildScope.add(grandChildItem);
 
-      expect(grandChildItem.isDisposed, isFalse);
+        expect(grandChildItem.isDisposed, isFalse);
 
-      scope.dispose();
+        scope.dispose();
 
-      expect(grandChildItem.isDisposed, isTrue);
-      expect(grandChildScope.items, isEmpty);
-      expect(childScope.children, isEmpty);
-      expect(childScope.items, isEmpty);
-      expect(scope.children, isEmpty);
-    },);
+        expect(grandChildItem.isDisposed, isTrue);
+        expect(grandChildScope.items, isEmpty);
+        expect(childScope.children, isEmpty);
+        expect(childScope.items, isEmpty);
+        expect(scope.children, isEmpty);
+      },
+    );
 
     test('dispose should remove the scope from its parent', () {
       final parentScope = DataScope();
@@ -145,32 +158,41 @@ void main() {
       expect(parentScope.children, isNot(contains(childScope)));
     });
 
-    test('dispose should dispose items and children in reverse order of addition', () {
-      final disposalOrder = <String>[];
+    test(
+      'dispose should dispose items and children in reverse order of addition',
+      () {
+        final disposalOrder = <String>[];
 
-      final item1 = OrderRecordingChangeNotifier('item1', disposalOrder);
-      final item2 = OrderRecordingChangeNotifier('item2', disposalOrder);
+        final item1 = OrderRecordingChangeNotifier('item1', disposalOrder);
+        final item2 = OrderRecordingChangeNotifier('item2', disposalOrder);
 
-      final childScope1 = scope.child(); // Added first
-      final childScope2 = scope.child(); // Added second
+        final childScope1 = scope.child(); // Added first
+        final childScope2 = scope.child(); // Added second
 
-      final child1Item = OrderRecordingChangeNotifier('child1Item', disposalOrder);
-      final child2Item = OrderRecordingChangeNotifier('child2Item', disposalOrder);
+        final child1Item = OrderRecordingChangeNotifier(
+          'child1Item',
+          disposalOrder,
+        );
+        final child2Item = OrderRecordingChangeNotifier(
+          'child2Item',
+          disposalOrder,
+        );
 
-      childScope1.add(child1Item);
-      childScope2.add(child2Item);
-      scope.add(item1);
-      scope.add(item2);
+        childScope1.add(child1Item);
+        childScope2.add(child2Item);
+        scope.add(item1);
+        scope.add(item2);
 
-      scope.dispose();
+        scope.dispose();
 
-      // Expected order:
-      // 1. childScope2.dispose() -> child2Item.dispose()
-      // 2. childScope1.dispose() -> child1Item.dispose()
-      // 3. item2.dispose()
-      // 4. item1.dispose()
-      expect(disposalOrder, ['child2Item', 'child1Item', 'item2', 'item1']);
-    },);
+        // Expected order:
+        // 1. childScope2.dispose() -> child2Item.dispose()
+        // 2. childScope1.dispose() -> child1Item.dispose()
+        // 3. item2.dispose()
+        // 4. item1.dispose()
+        expect(disposalOrder, ['child2Item', 'child1Item', 'item2', 'item1']);
+      },
+    );
   });
 
   group('DataScope Edge Cases', () {
@@ -192,13 +214,16 @@ void main() {
       expect(mockItem.isDisposed, isTrue); // Should still be disposed
     });
 
-    test('removing an item that is not in the scope should do nothing and return false', () {
-      final nonExistentItem = MockChangeNotifier();
-      expect(scope.items, isEmpty);
-      expect(scope.remove(nonExistentItem), isFalse); // Should return false
-      expect(scope.items, isEmpty); // Should still be empty
-      expect(nonExistentItem.isDisposed, isFalse); // Should not dispose it
-    });
+    test(
+      'removing an item that is not in the scope should do nothing and return false',
+      () {
+        final nonExistentItem = MockChangeNotifier();
+        expect(scope.items, isEmpty);
+        expect(scope.remove(nonExistentItem), isFalse); // Should return false
+        expect(scope.items, isEmpty); // Should still be empty
+        expect(nonExistentItem.isDisposed, isFalse); // Should not dispose it
+      },
+    );
 
     test('disposing a child scope should not dispose the parent scope', () {
       final parentScope = DataScope();
@@ -211,13 +236,21 @@ void main() {
 
       childScope.dispose();
 
-      expect(parentItem.isDisposed, isFalse); // Parent's item should NOT be disposed
-      expect(parentScope.children, isNot(contains(childScope))); // Child should be removed
+      expect(
+        parentItem.isDisposed,
+        isFalse,
+      ); // Parent's item should NOT be disposed
+      expect(
+        parentScope.children,
+        isNot(contains(childScope)),
+      ); // Child should be removed
     });
 
     test("should add child to parent's children list upon creation", () {
       final parentScope = DataScope();
-      final childScope = DataScope(parent: parentScope); // Create child with parent
+      final childScope = DataScope(
+        parent: parentScope,
+      ); // Create child with parent
       expect(parentScope.children, contains(childScope));
       expect(parentScope.children.length, 1);
     });
@@ -234,5 +267,46 @@ void main() {
       expect(scope.items, contains(mockItem));
       expect(nonExistentItem.isDisposed, isFalse);
     });
+  });
+
+  group('MutableDataScope Extension', () {
+    late DataScope scope;
+    late MutableLiveData<int> source;
+
+    setUp(() {
+      scope = DataScope();
+      source = MutableLiveData(10);
+    });
+
+    test(
+      'bridgeFrom should create a MutableLiveData with the initial value',
+      () {
+        final mirror = scope.bridgeFrom(source);
+        expect(mirror.value, 10);
+        expect(scope.items, contains(mirror));
+      },
+    );
+
+    test('bridgeFrom should update the mirror when the source changes', () {
+      final mirror = scope.bridgeFrom(source);
+      expect(mirror.value, 10);
+
+      source.value = 20;
+      expect(mirror.value, 20);
+    });
+
+    test(
+      'disposing the scope should dispose the mirror and remove the listener',
+      () {
+        final mirror = scope.bridgeFrom(source);
+        expect(mirror.isDisposed, isFalse);
+        expect(source.hasListeners, isTrue);
+
+        scope.dispose();
+
+        expect(mirror.isDisposed, isTrue);
+        expect(source.hasListeners, isFalse);
+      },
+    );
   });
 }

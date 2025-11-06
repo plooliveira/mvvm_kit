@@ -1,4 +1,4 @@
-import 'package:mvvm_kit/src/live_data/live_data.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 abstract class RepositoryData<T> {
   T get value;

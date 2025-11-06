@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mvvm_kit/src/live_data/bridge.dart';
 
-import 'package:mvvm_kit/src/live_data/live_data.dart';
-import 'package:mvvm_kit/src/live_data/scope.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 // Mocks for testing
 class MockChangeNotifier extends ChangeNotifier {
@@ -117,26 +115,6 @@ void main() {
       expect(() => liveData.reload(), returnsNormally);
     });
 
-    test(
-      'dispose should clear all subscribers and remove itself from parent scope',
-      () {
-        final parentScope = DataScope();
-        final sourceLiveData = MutableLiveData(10);
-        // BridgedLiveData is used to test the parent scope functionality
-        final liveData = BridgedLiveData(sourceLiveData, parentScope);
-        liveData.subscribe((value) {});
-
-        expect(liveData.subscribers, isNotEmpty);
-        expect(parentScope.items, contains(liveData));
-
-        liveData.dispose();
-
-        expect(liveData.subscribers, isEmpty);
-        expect(liveData.isDisposed, isTrue);
-        expect(parentScope.items, isNot(contains(liveData)));
-      },
-    );
-
     test('notifyIfChanged should NOT notify if value is same as initial', () {
       final liveData = MutableLiveData(10);
       int callCount = 0;
@@ -220,7 +198,7 @@ void main() {
 
       expect(callCount, 1); // Initial call
 
-      liveData.editValue((list) {
+      liveData.update((list) {
         list.add(4);
       });
 

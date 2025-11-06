@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'live_data/live_data.dart';
-import 'live_data/scope.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 abstract class ViewModel extends LifecycleViewModel {
   LiveData<bool> get actionInProgress => _actionInProgress;

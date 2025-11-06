@@ -1,7 +1,5 @@
 import 'package:flutter/widgets.dart';
-
-import 'package:mvvm_kit/src/live_data/live_data.dart';
-import 'package:mvvm_kit/src/live_data/scope.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 class TextLiveData extends MutableLiveData<String> {
   final bool _disposeController;

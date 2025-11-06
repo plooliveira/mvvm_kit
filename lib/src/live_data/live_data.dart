@@ -1,14 +1,21 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mvvm_kit/src/live_data/filter.dart';
-import 'package:mvvm_kit/src/live_data/mirror.dart';
-import 'package:mvvm_kit/src/live_data/scope.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
-bool _allChangeDetector<T>(T to, T from) => true;
+typedef ChangeDetector<T> = bool Function(T a, T b);
+const _deepEquality = DeepCollectionEquality();
+
+bool _defaultChangeDetector<T>(T to, T from) {
+  if (identical(to, from)) return false;
+  try {
+    return !_deepEquality.equals(to, from);
+  } catch (_) {
+    return to != from;
+  }
+}
 
 abstract class LiveData<T> extends ChangeNotifier {
-  final DataScope? parentScope;
-  final DataScope? scope;
 
   bool _isDisposed = false;
 
@@ -24,15 +31,14 @@ abstract class LiveData<T> extends ChangeNotifier {
   T? _lastNotifyCheck;
 
   LiveData([T? value, DataScope? scope])
-    : parentScope = scope,
-      scope = scope?.child(),
+    :
       _lastNotifyCheck = value {
     scope?.add(this);
   }
 
   T call() => value;
 
-  late bool Function(T, T) changeDetector = _defaultChangeDetector;
+  late ChangeDetector<T> changeDetector = _defaultChangeDetector;
 
   LiveData<T> mirror() => LiveDataMirror(this);
 
@@ -80,42 +86,7 @@ abstract class LiveData<T> extends ChangeNotifier {
   void dispose() {
     _isDisposed = true;
     _subscribers.clear();
-    scope?.dispose();
-    parentScope?.remove(this);
     super.dispose();
-  }
-}
-
-class MutableLiveData<T> extends LiveData<T> {
-  T _value;
-
-  @override
-  T get value => _value;
-
-  MutableLiveData(T super.value, [bool emitAll = false]) : _value = value {
-    if (emitAll) {
-      changeDetector = _allChangeDetector;
-    }
-  }
-
-  set value(T to) {
-    if (changeDetector(to, _value)) {
-      _value = to;
-      notifyListeners();
-    }
-  }
-
-  LiveData<T> get immutable => this;
-
-  void editValue(Function(T value) block) {
-    block(_value);
-    notifyListeners();
-  }
-}
-
-extension MutableDataScope on DataScope {
-  MutableLiveData<T> mutable<T>(T start) {
-    return add(MutableLiveData(start));
   }
 }
 
@@ -138,42 +109,4 @@ extension ListLiveData<D> on LiveData<Iterable<D>> {
 
   LiveData<Iterable<D>> notNull() =>
       AutoDisposeFilter<D>(this, (value) => value != null);
-}
-
-bool _defaultChangeDetector<T>(T to, T from) {
-  if (to is List && from is List) {
-    if (to.length != from.length) return true;
-
-    for (var i = 0; i < to.length; i++) {
-      if (to[i] != from[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  if (to is Map && from is Map) {
-    if (to.length != from.length) return true;
-
-    for (var key in to.keys) {
-      if (!from.containsKey(key) || from[key] != to[key]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  if (to is Iterable && from is Iterable) {
-    final toItr = to.toList();
-    final fromItr = from.toList();
-    if (toItr.length != fromItr.length) return true;
-    for (var i = 0; i < toItr.length; i++) {
-      if (toItr[i] != fromItr[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  return to != from;
 }

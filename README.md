@@ -92,6 +92,16 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 class PersonViewModel extends ViewModel {
   final name = observable('John Doe');
   final age = observable(30);
+
+  @override
+  void onActive() {
+    // Perform actions when the view becomes active
+  }
+  @override
+  void onInactive() {
+    // Perform actions when the view becomes inactive
+  }
+
 }
 ```
 

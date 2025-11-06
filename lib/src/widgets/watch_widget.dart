@@ -1,54 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:mvvm_kit/src/live_data/live_data.dart';
 
-class Watch extends GroupWatch {
-  Watch(ChangeNotifier notifier, {required super.builder, super.key})
-    : super([notifier]);
+class Watch<T> extends StatefulWidget {
+  const Watch(this.notifier, {required this.builder, super.key});
+
+  final LiveData<T> notifier;
+  final Widget Function(BuildContext, T) builder;
+  @override
+  State createState() => _WatchState<T>();
+}
+
+class _WatchState<T> extends State<Watch<T>> with WatchMixin {
+  @override
+  List<LiveData<T>> get _notifiers => [widget.notifier];
 
   @override
-  State createState() => _WatchState();
+  Widget build(BuildContext context) =>
+      widget.builder(context, widget.notifier.value);
 }
 
 class GroupWatch extends StatefulWidget {
-  final List<ChangeNotifier> notifiers;
+  final List<LiveData> notifiers;
   final Widget Function(BuildContext) builder;
 
   GroupWatch(this.notifiers, {required this.builder, Key? key})
     : super(key: key ?? ValueKey(notifiers));
 
   @override
-  State createState() => _WatchState();
+  State createState() => _GroupWatchState();
 }
 
-class _WatchState extends State<GroupWatch> {
+class _GroupWatchState extends State<GroupWatch> with WatchMixin {
+  @override
+  List<LiveData> get _notifiers => widget.notifiers;
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
+}
+
+mixin WatchMixin<T extends StatefulWidget> on State<T> {
+  List<LiveData> get _notifiers;
+
   @override
   void initState() {
     super.initState();
-    for (var notifier in widget.notifiers) {
-      notifier.addListener(_onNotified);
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GroupWatch oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    for (var notifier in oldWidget.notifiers) {
-      notifier.removeListener(_onNotified);
-    }
-    for (var notifier in widget.notifiers) {
-      notifier.addListener(_onNotified);
+    for (final notifier in _notifiers) {
+      notifier.addListener(_onNotifierChanged);
     }
   }
 
   @override
   void dispose() {
-    for (var notifier in widget.notifiers) {
-      notifier.removeListener(_onNotified);
+    for (final notifier in _notifiers) {
+      notifier.removeListener(_onNotifierChanged);
     }
     super.dispose();
   }
 
-  void _onNotified() => setState(() {});
-
-  @override
-  Widget build(BuildContext context) => widget.builder(context);
+  void _onNotifierChanged() {
+    setState(() {});
+  }
 }

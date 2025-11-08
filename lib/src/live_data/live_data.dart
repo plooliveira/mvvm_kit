@@ -16,12 +16,14 @@ bool _defaultChangeDetector<T>(T to, T from) {
 }
 
 abstract class LiveData<T> extends ChangeNotifier {
-
   bool _isDisposed = false;
 
   bool get isDisposed => _isDisposed;
 
   final List<Function(T)> _subscribers = [];
+
+  final DataScope? scope;
+  final DataScope? parentScope;
 
   @visibleForTesting
   List<Function(T)> get subscribers => _subscribers;
@@ -30,10 +32,10 @@ abstract class LiveData<T> extends ChangeNotifier {
 
   T? _lastNotifyCheck;
 
-  LiveData([T? value, DataScope? scope])
-    :
-      _lastNotifyCheck = value {
-    scope?.add(this);
+  LiveData([T? value, this.parentScope])
+    : scope = parentScope?.child() ?? DataScope() {
+    _lastNotifyCheck = value;
+    parentScope?.add(this);
   }
 
   T call() => value;
@@ -42,10 +44,13 @@ abstract class LiveData<T> extends ChangeNotifier {
 
   LiveData<T> mirror() => LiveDataMirror(this);
 
-  LiveData<S> transform<S>(S Function(LiveData<T> data) transform) =>
-      TransformedLiveDataMirror(this, transform: transform);
+  LiveData<S> transform<S>(
+    S Function(LiveData<T> data) transform,
+    DataScope? scope,
+  ) => TransformedLiveDataMirror(this, transform: transform, scope: scope);
 
-  HotswapLiveData<T> hotswappable() => HotswapLiveData(this);
+  HotswapLiveData<T> hotswappable([DataScope? scope]) =>
+      HotswapLiveData(this, scope);
 
   LiveData<T> subscribe(Function(T value) callback) {
     if (!_subscribers.contains(callback)) {
@@ -86,6 +91,8 @@ abstract class LiveData<T> extends ChangeNotifier {
   void dispose() {
     _isDisposed = true;
     _subscribers.clear();
+    scope?.dispose();
+    parentScope?.remove(this);
     super.dispose();
   }
 }

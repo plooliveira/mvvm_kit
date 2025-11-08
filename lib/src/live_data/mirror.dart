@@ -20,11 +20,12 @@ class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
 
   late T _value;
 
-  NotifierData(this.base, {required T Function(B) transform})
+  NotifierData(this.base, {required T Function(B) transform, DataScope? scope})
     : onTransform = transform,
       super(transform(base)) {
     _value = onTransform(base);
     base.addListener(_onBaseChanged);
+    scope?.add(this);
   }
 
   @override
@@ -46,24 +47,39 @@ class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
 
 class LiveDataMirror<T> extends NotifierData<T, LiveData<T>> {
   LiveDataMirror(LiveData<T> base, {T Function(LiveData<T>)? transform})
-    : super(base, transform: transform ?? _liveDataTransform) {
+    : super(
+        base,
+        transform: transform ?? _liveDataTransform,
+        scope: base.scope,
+      ) {
     changeDetector = base.changeDetector;
   }
 }
 
 class TransformedLiveDataMirror<T, S, B extends LiveData<S>>
     extends NotifierData<T, B> {
-  TransformedLiveDataMirror(super.base, {required super.transform});
+  TransformedLiveDataMirror(
+    super.base, {
+    required super.transform,
+    DataScope? scope,
+  }) : super(scope: scope ?? base.scope);
 }
 
 class ValueNotifierData<T> extends NotifierData<T, ValueNotifier<T>> {
-  ValueNotifierData(super.base, {T Function(ValueNotifier<T>)? transform})
-    : super(transform: transform ?? _valueNotifierTransform);
+  ValueNotifierData(
+    super.base,
+    DataScope? scope, {
+    T Function(ValueNotifier<T>)? transform,
+  }) : super(transform: transform ?? _valueNotifierTransform, scope: scope);
 }
 
 class TransformedValueNotifierData<T, B extends ValueNotifier>
     extends NotifierData<T, B> {
-  TransformedValueNotifierData(super.base, {required super.transform});
+  TransformedValueNotifierData(
+    super.base,
+    DataScope? scope, {
+    required super.transform,
+  }) : super(scope: scope);
 }
 
 T? _hardCast<T, D>(D? value) => value == null ? null : value as T;
@@ -79,9 +95,14 @@ class StreamData<T, D, S extends Stream<D>> extends LiveData<T?> {
 
   StreamSubscription<D>? _subscription;
 
-  StreamData(this.base, {T? Function(D?)? transform, D? current, T? value})
-    : onTransform = transform ?? _hardCast,
-      super(value ?? transform?.call(current)) {
+  StreamData(
+    this.base,
+    DataScope? scope, {
+    T? Function(D?)? transform,
+    D? current,
+    T? value,
+  }) : onTransform = transform ?? _hardCast,
+       super(value ?? transform?.call(current), scope) {
     _value = value ?? onTransform(current);
     _subscription = base.listen(_onBaseChanged);
   }
@@ -105,7 +126,8 @@ class HotswapLiveData<T> extends LiveData<T> {
   @override
   T get value => _base.value;
 
-  HotswapLiveData(LiveData<T> base) : super(base.value) {
+  HotswapLiveData(LiveData<T> base, DataScope? scope)
+    : super(base.value, scope) {
     _base = base;
     changeDetector = base.changeDetector;
     _base.subscribe(_onBaseChanged);

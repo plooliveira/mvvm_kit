@@ -345,4 +345,24 @@ void main() {
       });
     });
   });
+
+  group('LiveData Scope Management', () {
+    test(
+      'transformed LiveData without explicit scope should be disposed when source with scope is disposed',
+      () {
+        final scope = DataScope();
+        final source = MutableLiveData(10, false, scope);
+        final transformed = source.transform((data) => data.value * 2, null);
+
+        expect(source.isDisposed, isFalse);
+        expect(transformed.isDisposed, isFalse);
+        expect(transformed.value, 20);
+
+        source.dispose();
+
+        expect(source.isDisposed, isTrue);
+        expect(transformed.isDisposed, isTrue);
+      },
+    );
+  });
 }

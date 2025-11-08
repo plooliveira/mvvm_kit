@@ -7,7 +7,7 @@ class AutoDisposeFilter<D> extends LiveData<Iterable<D>> {
   @override
   Iterable<D> get value => base.value.where(filter);
 
-  AutoDisposeFilter(this.base, this.filter) : super([]) {
+  AutoDisposeFilter(this.base, this.filter) : super([], base.scope) {
     base.addListener(_onBasedChanged);
   }
 
@@ -17,7 +17,7 @@ class AutoDisposeFilter<D> extends LiveData<Iterable<D>> {
 
   @override
   void dispose() {
-    base.dispose();
+    base.removeListener(_onBasedChanged);
     super.dispose();
   }
 }

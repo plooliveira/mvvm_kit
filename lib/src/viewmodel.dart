@@ -15,7 +15,7 @@ abstract class ViewModel extends LifecycleViewModel {
 abstract class LifecycleViewModel extends ChangeNotifier {
   final DataScope dataScope = DataScope();
 
-  final List<ChangeNotifier> _observed = [];
+  final List<LiveData> _observed = [];
 
   bool _isActive = false;
 
@@ -42,7 +42,7 @@ abstract class LifecycleViewModel extends ChangeNotifier {
     return observable;
   }
 
-  T observed<T extends ChangeNotifier>(T value) {
+  T observed<T extends LiveData>(T value) {
     _observed.add(value);
     return value;
   }

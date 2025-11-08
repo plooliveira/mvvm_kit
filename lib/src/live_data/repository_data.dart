@@ -5,7 +5,10 @@ abstract class RepositoryData<T> {
 
   LiveData<T> get live;
 
-  LiveData<S> transform<S>(S Function(LiveData<T> data) transform);
+  LiveData<S> transform<S>(
+    S Function(LiveData<T> data) transform,
+    DataScope? scope,
+  );
 }
 
 abstract class SourceRepositoryData<T, D extends LiveData<T>>
@@ -19,8 +22,10 @@ abstract class SourceRepositoryData<T, D extends LiveData<T>>
   LiveData<T> get live => source.mirror();
 
   @override
-  LiveData<S> transform<S>(S Function(LiveData<T>) transform) =>
-      source.transform(transform);
+  LiveData<S> transform<S>(
+    S Function(LiveData<T>) transform,
+    DataScope? scope,
+  ) => source.transform(transform, scope);
 }
 
 class LiveRepositoryData<T> extends SourceRepositoryData<T, LiveData<T>> {

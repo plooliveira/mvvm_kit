@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 
 import 'package:mvvm_kit/mvvm_kit.dart';
 
+part '_mediator.dart';
+part '_merged.dart';
+
 class DataScope {
   final LinkedHashSet<ChangeNotifier> _items = LinkedHashSet();
   final LinkedHashSet<DataScope> _children = LinkedHashSet();
@@ -87,5 +90,18 @@ class _DisposeCallback extends ChangeNotifier {
     } finally {
       super.dispose();
     }
+  }
+}
+
+extension DataScopeExtensions on DataScope {
+  LiveData<T> join<T>(List<LiveData> sources, T Function() mediate) =>
+      add(_MediatorLiveData(sources, mediate));
+
+  LiveData<T> merge<T>(List<ChangeNotifier> sources, T Function() transform) {
+    return _MergedLiveData<T>(
+      sources: sources,
+      transform: transform,
+      scope: this,
+    );
   }
 }

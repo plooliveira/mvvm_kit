@@ -1,7 +1,4 @@
-import 'dart:async';
-import 'package:flutter/widgets.dart';
-
-import 'package:mvvm_kit/mvvm_kit.dart';
+part of './live_data.dart';
 
 T _liveDataTransform<T>(LiveData<T> data) {
   return data.value;
@@ -11,7 +8,7 @@ T _valueNotifierTransform<T>(ValueNotifier<T> data) {
   return data.value;
 }
 
-class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
+class _NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
   final B base;
   final T Function(B) onTransform;
 
@@ -20,7 +17,7 @@ class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
 
   late T _value;
 
-  NotifierData(this.base, {required T Function(B) transform, DataScope? scope})
+  _NotifierData(this.base, {required T Function(B) transform, DataScope? scope})
     : onTransform = transform,
       super(transform(base)) {
     _value = onTransform(base);
@@ -45,8 +42,8 @@ class NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
   }
 }
 
-class LiveDataMirror<T> extends NotifierData<T, LiveData<T>> {
-  LiveDataMirror(LiveData<T> base, {T Function(LiveData<T>)? transform})
+class _LiveDataMirror<T> extends _NotifierData<T, LiveData<T>> {
+  _LiveDataMirror(LiveData<T> base, {T Function(LiveData<T>)? transform})
     : super(
         base,
         transform: transform ?? _liveDataTransform,
@@ -56,35 +53,26 @@ class LiveDataMirror<T> extends NotifierData<T, LiveData<T>> {
   }
 }
 
-class TransformedLiveDataMirror<T, S, B extends LiveData<S>>
-    extends NotifierData<T, B> {
-  TransformedLiveDataMirror(
+class _TransformedLiveDataMirror<T, S, B extends LiveData<S>>
+    extends _NotifierData<T, B> {
+  _TransformedLiveDataMirror(
     super.base, {
     required super.transform,
     DataScope? scope,
   }) : super(scope: scope ?? base.scope);
 }
 
-class ValueNotifierData<T> extends NotifierData<T, ValueNotifier<T>> {
-  ValueNotifierData(
+class _ValueNotifierData<T> extends _NotifierData<T, ValueNotifier<T>> {
+  _ValueNotifierData(
     super.base,
     DataScope? scope, {
     T Function(ValueNotifier<T>)? transform,
   }) : super(transform: transform ?? _valueNotifierTransform, scope: scope);
 }
 
-class TransformedValueNotifierData<T, B extends ValueNotifier>
-    extends NotifierData<T, B> {
-  TransformedValueNotifierData(
-    super.base,
-    DataScope? scope, {
-    required super.transform,
-  }) : super(scope: scope);
-}
-
 T? _hardCast<T, D>(D? value) => value == null ? null : value as T;
 
-class StreamData<T, D, S extends Stream<D>> extends LiveData<T?> {
+class _StreamData<T, D, S extends Stream<D>> extends LiveData<T?> {
   final S base;
   final T? Function(D?) onTransform;
 
@@ -95,7 +83,7 @@ class StreamData<T, D, S extends Stream<D>> extends LiveData<T?> {
 
   StreamSubscription<D>? _subscription;
 
-  StreamData(
+  _StreamData(
     this.base,
     DataScope? scope, {
     T? Function(D?)? transform,

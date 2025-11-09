@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 
@@ -364,5 +366,174 @@ void main() {
         expect(transformed.isDisposed, isTrue);
       },
     );
+  });
+
+  group('LiveData Factory Methods', () {
+    group('fromValueNotifier', () {
+      test('should create LiveData from ValueNotifier', () {
+        final notifier = ValueNotifier<int>(10);
+        final liveData = LiveData.fromValueNotifier(notifier);
+
+        expect(liveData.value, 10);
+        expect(liveData.isDisposed, isFalse);
+      });
+
+      test('should update when ValueNotifier changes', () {
+        final notifier = ValueNotifier<int>(10);
+        final liveData = LiveData.fromValueNotifier(notifier);
+
+        int? receivedValue;
+        int callCount = 0;
+        liveData.subscribe((value) {
+          receivedValue = value;
+          callCount++;
+        });
+
+        expect(receivedValue, 10);
+        expect(callCount, 1);
+
+        notifier.value = 20;
+        expect(receivedValue, 20);
+        expect(callCount, 2);
+
+        notifier.value = 30;
+        expect(receivedValue, 30);
+        expect(callCount, 3);
+      });
+
+      test('should be disposed when registered in scope', () {
+        final scope = DataScope();
+        final notifier = ValueNotifier<int>(10);
+        final liveData = LiveData.fromValueNotifier(notifier, scope);
+
+        expect(liveData.isDisposed, isFalse);
+
+        scope.dispose();
+
+        expect(liveData.isDisposed, isTrue);
+      });
+
+      test('should remove listener from ValueNotifier when disposed', () {
+        final notifier = ValueNotifier<int>(10);
+        final liveData = LiveData.fromValueNotifier(notifier);
+
+        expect(notifier.hasListeners, isTrue);
+
+        liveData.dispose();
+
+        expect(notifier.hasListeners, isFalse);
+      });
+
+      test('should work with different types', () {
+        final stringNotifier = ValueNotifier<String>('hello');
+        final stringData = LiveData.fromValueNotifier(stringNotifier);
+
+        expect(stringData.value, 'hello');
+
+        stringNotifier.value = 'world';
+        expect(stringData.value, 'world');
+      });
+    });
+
+    group('fromStream', () {
+      test('should create LiveData from Stream with initial value', () {
+        final controller = StreamController<int>();
+        final liveData = LiveData.fromStream(controller.stream, 0);
+
+        expect(liveData.value, 0);
+        expect(liveData.isDisposed, isFalse);
+
+        controller.close();
+        liveData.dispose();
+      });
+
+      test('should update when Stream emits values', () async {
+        final controller = StreamController<int>();
+        final liveData = LiveData.fromStream(controller.stream, 0);
+
+        int? receivedValue;
+        int callCount = 0;
+        liveData.subscribe((value) {
+          receivedValue = value;
+          callCount++;
+        });
+
+        expect(receivedValue, 0);
+        expect(callCount, 1);
+
+        controller.add(10);
+        await Future.delayed(Duration(milliseconds: 10));
+        expect(receivedValue, 10);
+        expect(callCount, 2);
+
+        controller.add(20);
+        await Future.delayed(Duration(milliseconds: 10));
+        expect(receivedValue, 20);
+        expect(callCount, 3);
+
+        await controller.close();
+        liveData.dispose();
+      });
+
+      test('should be disposed when registered in scope', () async {
+        final scope = DataScope();
+        final controller = StreamController<int>();
+        final liveData = LiveData.fromStream(controller.stream, 0, scope);
+
+        expect(liveData.isDisposed, isFalse);
+
+        scope.dispose();
+
+        expect(liveData.isDisposed, isTrue);
+        await controller.close();
+      });
+
+      test('should cancel stream subscription when disposed', () async {
+        final controller = StreamController<int>();
+        final liveData = LiveData.fromStream(controller.stream, 0);
+
+        expect(controller.hasListener, isTrue);
+
+        liveData.dispose();
+
+        expect(controller.hasListener, isFalse);
+        await controller.close();
+      });
+
+      test('should work with different types', () async {
+        final controller = StreamController<String>();
+        final liveData = LiveData.fromStream(controller.stream, 'initial');
+
+        expect(liveData.value, 'initial');
+
+        controller.add('hello');
+        await Future.delayed(Duration(milliseconds: 10));
+        expect(liveData.value, 'hello');
+
+        await controller.close();
+        liveData.dispose();
+      });
+
+      test('should handle rapid stream emissions', () async {
+        final controller = StreamController<int>();
+        final liveData = LiveData.fromStream(controller.stream, 0);
+
+        int? lastValue;
+        liveData.subscribe((value) {
+          lastValue = value;
+        });
+
+        // Emit multiple values rapidly
+        for (int i = 1; i <= 5; i++) {
+          controller.add(i);
+        }
+
+        await Future.delayed(Duration(milliseconds: 50));
+        expect(lastValue, 5);
+
+        await controller.close();
+        liveData.dispose();
+      });
+    });
   });
 }

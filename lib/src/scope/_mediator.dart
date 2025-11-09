@@ -1,6 +1,6 @@
-import 'package:mvvm_kit/mvvm_kit.dart';
+part of 'scope.dart';
 
-class MediatorLiveData<T> extends LiveData<T> {
+class _MediatorLiveData<T> extends LiveData<T> {
   final T Function() mediate;
   final List<LiveData> sources;
 
@@ -9,7 +9,7 @@ class MediatorLiveData<T> extends LiveData<T> {
   @override
   T get value => _value;
 
-  MediatorLiveData(this.sources, this.mediate) : super() {
+  _MediatorLiveData(this.sources, this.mediate) : super() {
     _value = mediate();
     for (var source in sources) {
       source.subscribe(_mediate);
@@ -31,9 +31,4 @@ class MediatorLiveData<T> extends LiveData<T> {
     }
     super.dispose();
   }
-}
-
-extension MediatorDataScope on DataScope {
-  MediatorLiveData<T> join<T>(List<LiveData> sources, T Function() mediate) =>
-      add(MediatorLiveData(sources, mediate));
 }

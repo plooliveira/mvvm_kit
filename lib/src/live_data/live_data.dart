@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mvvm_kit/mvvm_kit.dart';
+
+part '_mirror.dart';
+part '_filter.dart';
 
 typedef ChangeDetector<T> = bool Function(T a, T b);
 const _deepEquality = DeepCollectionEquality();
@@ -38,19 +43,30 @@ abstract class LiveData<T> extends ChangeNotifier {
     parentScope?.add(this);
   }
 
+  /// Creates a LiveData from a ValueNotifier
+  factory LiveData.fromValueNotifier(
+    ValueNotifier<T> notifier, [
+    DataScope? scope,
+  ]) {
+    return _ValueNotifierData(notifier, scope);
+  }
+
+  /// Creates a nullable LiveData from a Stream
+  /// 
+  /// Returns a LiveData<T?> that updates when the stream emits values.
+  /// The [initialValue] is used as the initial value of the LiveData.
+  /// Note: Returns LiveData<T?> because the stream value can be null.
+  static LiveData<T?> fromStream<T>(
+    Stream<T> stream,
+    T initialValue, [
+    DataScope? scope,
+  ]) {
+    return _StreamData<T, T, Stream<T>>(stream, scope, value: initialValue);
+  }
+
   T call() => value;
 
   late ChangeDetector<T> changeDetector = _defaultChangeDetector;
-
-  LiveData<T> mirror() => LiveDataMirror(this);
-
-  LiveData<S> transform<S>(
-    S Function(LiveData<T> data) transform,
-    DataScope? scope,
-  ) => TransformedLiveDataMirror(this, transform: transform, scope: scope);
-
-  HotswapLiveData<T> hotswappable([DataScope? scope]) =>
-      HotswapLiveData(this, scope);
 
   LiveData<T> subscribe(Function(T value) callback) {
     if (!_subscribers.contains(callback)) {
@@ -97,6 +113,18 @@ abstract class LiveData<T> extends ChangeNotifier {
   }
 }
 
+extension LiveDataExtensions<T> on LiveData<T> {
+  LiveData<T> mirror() => _LiveDataMirror(this);
+
+  LiveData<S> transform<S>(
+    S Function(LiveData<T> data) transform,
+    DataScope? scope,
+  ) => _TransformedLiveDataMirror(this, transform: transform, scope: scope);
+
+  HotswapLiveData<T> hotswappable([DataScope? scope]) =>
+      HotswapLiveData(this, scope);
+}
+
 extension ListLiveData<D> on LiveData<Iterable<D>> {
   bool get isEmpty => value.isEmpty;
 
@@ -112,8 +140,8 @@ extension ListLiveData<D> on LiveData<Iterable<D>> {
       value.expand(toElements);
 
   LiveData<Iterable<D>> filtered(bool Function(D value) check) =>
-      AutoDisposeFilter(this, check);
+      _AutoDisposeFilter(this, check);
 
   LiveData<Iterable<D>> notNull() =>
-      AutoDisposeFilter<D>(this, (value) => value != null);
+      _AutoDisposeFilter<D>(this, (value) => value != null);
 }

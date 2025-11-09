@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
+part of 'scope.dart';
 
-import 'package:mvvm_kit/mvvm_kit.dart';
-
-class MergedLiveData<T> extends LiveData<T> {
+class _MergedLiveData<T> extends LiveData<T> {
   final List<ChangeNotifier> _sources;
   final T Function() _transform;
   T _value;
@@ -10,7 +8,7 @@ class MergedLiveData<T> extends LiveData<T> {
   @override
   T get value => _value;
 
-  MergedLiveData({
+  _MergedLiveData({
     required List<ChangeNotifier> sources,
     required T Function() transform,
     DataScope? scope,
@@ -37,15 +35,5 @@ class MergedLiveData<T> extends LiveData<T> {
       source.removeListener(_onSourceChanged);
     }
     super.dispose();
-  }
-}
-
-extension MergingDataScope on DataScope {
-  LiveData<T> merge<T>(List<ChangeNotifier> sources, T Function() transform) {
-    return MergedLiveData<T>(
-      sources: sources,
-      transform: transform,
-      scope: this,
-    );
   }
 }

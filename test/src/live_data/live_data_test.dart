@@ -536,4 +536,356 @@ void main() {
       });
     });
   });
+
+  group('HotswapLiveData', () {
+    group('Creation and Initialization', () {
+      test('should create HotswapLiveData from a base LiveData', () {
+        final base = MutableLiveData<int>(10);
+        final hotswap = base.hotswappable();
+
+        expect(hotswap.value, 10);
+        expect(hotswap.isDisposed, isFalse);
+
+        hotswap.dispose();
+        base.dispose();
+      });
+    });
+
+    group('Basic Behavior', () {
+      test('should update when base LiveData changes', () {
+        final base = MutableLiveData<int>(10);
+        final hotswap = base.hotswappable();
+
+        int? receivedValue;
+        int callCount = 0;
+        hotswap.subscribe((value) {
+          receivedValue = value;
+          callCount++;
+        });
+
+        expect(receivedValue, 10);
+        expect(callCount, 1);
+
+        base.value = 20;
+        expect(receivedValue, 20);
+        expect(callCount, 2);
+
+        base.value = 30;
+        expect(receivedValue, 30);
+        expect(callCount, 3);
+
+        hotswap.dispose();
+        base.dispose();
+      });
+    });
+
+    group('Hotswap Functionality', () {
+      test('should hotswap to new base LiveData and update value', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        int? receivedValue;
+        hotswap.subscribe((value) => receivedValue = value);
+
+        expect(receivedValue, 10);
+
+        hotswap.hotswap(base2);
+
+        expect(hotswap.value, 20);
+        expect(receivedValue, 20);
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+
+      test('should keep subscribers active after hotswap', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        int callCount = 0;
+        int? lastValue;
+        hotswap.subscribe((value) {
+          callCount++;
+          lastValue = value;
+        });
+
+        expect(callCount, 1);
+        expect(lastValue, 10);
+
+        hotswap.hotswap(base2);
+        expect(callCount, 2);
+        expect(lastValue, 20);
+
+        base2.value = 30;
+        expect(callCount, 3);
+        expect(lastValue, 30);
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+
+      test('should stop listening to old base after hotswap', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        int callCount = 0;
+        int? lastValue;
+        hotswap.subscribe((value) {
+          callCount++;
+          lastValue = value;
+        });
+
+        expect(callCount, 1);
+
+        // Use disposeOld=false to keep base1 alive
+        hotswap.hotswap(base2, disposeOld: false);
+        expect(callCount, 2);
+
+        // Change old base - should NOT notify (unsubscribed but still alive)
+        base1.value = 100;
+        expect(callCount, 2);
+        expect(lastValue, 20);
+
+        // Change new base - should notify
+        base2.value = 30;
+        expect(callCount, 3);
+        expect(lastValue, 30);
+
+        hotswap.dispose();
+        base1.dispose();
+        base2.dispose();
+      });
+
+      test('should do nothing when hotswapping to same base', () {
+        final base = MutableLiveData<int>(10);
+        final hotswap = base.hotswappable();
+
+        int callCount = 0;
+        hotswap.subscribe((value) => callCount++);
+
+        expect(callCount, 1);
+
+        // Hotswap to same base
+        hotswap.hotswap(base);
+
+        // Should not notify again
+        expect(callCount, 1);
+        expect(base.isDisposed, isFalse);
+
+        hotswap.dispose();
+        base.dispose();
+      });
+    });
+
+    group('disposeOld Parameter', () {
+      test('should dispose old base when hotswap with disposeOld=true', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        expect(base1.isDisposed, isFalse);
+
+        hotswap.hotswap(base2, disposeOld: true);
+
+        expect(base1.isDisposed, isTrue);
+        expect(base2.isDisposed, isFalse);
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+
+      test('should NOT dispose old base when hotswap with disposeOld=false',
+          () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        expect(base1.isDisposed, isFalse);
+
+        hotswap.hotswap(base2, disposeOld: false);
+
+        expect(base1.isDisposed, isFalse);
+        expect(base2.isDisposed, isFalse);
+
+        hotswap.dispose();
+        base1.dispose();
+        base2.dispose();
+      });
+    });
+
+    group('Scope Management', () {
+      test('should be disposed when registered in scope', () {
+        final scope = DataScope();
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable(scope);
+
+        expect(hotswap.isDisposed, isFalse);
+
+        hotswap.hotswap(base2);
+
+        scope.dispose();
+
+        expect(hotswap.isDisposed, isTrue);
+        // Base should NOT be disposed (not owned by hotswap)
+        expect(base2.isDisposed, isFalse);
+
+        base2.dispose();
+      });
+    });
+
+    group('Cleanup and Dispose', () {
+      test('should unsubscribe from current base when disposed', () {
+        final base = MutableLiveData<int>(10);
+        final hotswap = base.hotswappable();
+
+        // Hotswap subscribes to base
+        expect(base.subscribers.length, 1);
+
+        hotswap.dispose();
+
+        // Should unsubscribe
+        expect(base.subscribers.length, 0);
+        expect(base.isDisposed, isFalse);
+
+        base.dispose();
+      });
+    });
+
+    group('Change Detector', () {
+      test('should inherit changeDetector from new base on hotswap', () {
+        final base1 = MutableLiveData<int>(10);
+        // Make base1 always notify
+        base1.changeDetector = (a, b) => true;
+
+        final base2 = MutableLiveData<int>(20);
+        // base2 uses default changeDetector
+
+        final hotswap = base1.hotswappable();
+
+        int callCount = 0;
+        hotswap.subscribe((value) => callCount++);
+
+        expect(callCount, 1);
+
+        // base1's changeDetector always notifies on same value
+        base1.value = 10;
+        expect(callCount, 2);
+
+        // Hotswap to base2
+        hotswap.hotswap(base2);
+        expect(callCount, 3);
+
+        // base2's changeDetector should NOT notify on same value
+        base2.value = 20;
+        expect(callCount, 3); // Should not increase
+
+        base2.value = 30;
+        expect(callCount, 4); // Should increase
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+    });
+
+    group('Advanced Scenarios', () {
+      test('should handle multiple sequential hotswaps correctly', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final base3 = MutableLiveData<int>(30);
+        final base4 = MutableLiveData<int>(40);
+        final hotswap = base1.hotswappable();
+
+        expect(hotswap.value, 10);
+
+        hotswap.hotswap(base2);
+        expect(hotswap.value, 20);
+        expect(base1.isDisposed, isTrue);
+
+        hotswap.hotswap(base3);
+        expect(hotswap.value, 30);
+        expect(base2.isDisposed, isTrue);
+
+        hotswap.hotswap(base4);
+        expect(hotswap.value, 40);
+        expect(base3.isDisposed, isTrue);
+
+        expect(base4.isDisposed, isFalse);
+
+        hotswap.dispose();
+        base4.dispose();
+      });
+
+      test('should work with different base implementations of same type', () {
+        final mutable1 = MutableLiveData<int>(10);
+        final hotswap = mutable1.hotswappable();
+
+        expect(hotswap.value, 10);
+
+        final mutable2 = MutableLiveData<int>(20);
+        hotswap.hotswap(mutable2);
+        expect(hotswap.value, 20);
+
+        final notifier = ValueNotifier<int>(30);
+        final fromNotifier = LiveData.fromValueNotifier(notifier);
+        hotswap.hotswap(fromNotifier);
+        expect(hotswap.value, 30);
+
+        hotswap.dispose();
+        fromNotifier.dispose();
+        notifier.dispose();
+      });
+
+      test('should notify subscribers immediately on hotswap if value changed',
+          () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        int? receivedValue;
+        int callCount = 0;
+        hotswap.subscribe((value) {
+          receivedValue = value;
+          callCount++;
+        });
+
+        expect(receivedValue, 10);
+        expect(callCount, 1);
+
+        hotswap.hotswap(base2);
+
+        // Should notify immediately with new value
+        expect(receivedValue, 20);
+        expect(callCount, 2);
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+
+      test('should handle hotswap called during notification callback', () {
+        final base1 = MutableLiveData<int>(10);
+        final base2 = MutableLiveData<int>(20);
+        final hotswap = base1.hotswappable();
+
+        bool hotswapped = false;
+        hotswap.subscribe((value) {
+          if (value == 10 && !hotswapped) {
+            hotswapped = true;
+            // Hotswap during callback
+            hotswap.hotswap(base2);
+          }
+        });
+
+        // Should not throw error
+        expect(hotswap.value, 20);
+        expect(hotswapped, isTrue);
+
+        hotswap.dispose();
+        base2.dispose();
+      });
+    });
+  });
 }

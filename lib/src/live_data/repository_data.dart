@@ -25,7 +25,7 @@ abstract class SourceRepositoryData<T, D extends LiveData<T>>
   LiveData<S> transform<S>(
     S Function(LiveData<T>) transform,
     DataScope? scope,
-  ) => source.transform(transform, scope);
+  ) => source.transform(transform);
 }
 
 class LiveRepositoryData<T> extends SourceRepositoryData<T, LiveData<T>> {

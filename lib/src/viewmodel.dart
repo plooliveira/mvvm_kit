@@ -5,7 +5,7 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 
 abstract class ViewModel extends LifecycleViewModel {
   LiveData<bool> get actionInProgress => _actionInProgress;
-  late final MutableLiveData<bool> _actionInProgress = observable(false);
+  late final MutableLiveData<bool> _actionInProgress = mutable(false);
 
   void startAction() => _actionInProgress.value = true;
 
@@ -36,13 +36,13 @@ abstract class LifecycleViewModel extends ChangeNotifier {
 
   Completer _isActiveCompleter = Completer();
 
-  MutableLiveData<T> observable<T>(T value) {
+  MutableLiveData<T> mutable<T>(T value) {
     final MutableLiveData<T> observable = MutableLiveData(value);
     _observed.add(observable);
     return observable;
   }
 
-  T observed<T extends LiveData>(T value) {
+  T register<T extends LiveData>(T value) {
     _observed.add(value);
     return value;
   }

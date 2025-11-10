@@ -55,11 +55,8 @@ class _LiveDataMirror<T> extends _NotifierData<T, LiveData<T>> {
 
 class _TransformedLiveDataMirror<T, S, B extends LiveData<S>>
     extends _NotifierData<T, B> {
-  _TransformedLiveDataMirror(
-    super.base, {
-    required super.transform,
-    DataScope? scope,
-  }) : super(scope: scope ?? base.scope);
+  _TransformedLiveDataMirror(super.base, {required super.transform})
+    : super(scope: base.scope);
 }
 
 class _ValueNotifierData<T> extends _NotifierData<T, ValueNotifier<T>> {

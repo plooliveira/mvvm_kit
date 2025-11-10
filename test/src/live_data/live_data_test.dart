@@ -354,7 +354,7 @@ void main() {
       () {
         final scope = DataScope();
         final source = MutableLiveData(10, false, scope);
-        final transformed = source.transform((data) => data.value * 2, null);
+        final transformed = source.transform((data) => data.value * 2);
 
         expect(source.isDisposed, isFalse);
         expect(transformed.isDisposed, isFalse);
@@ -697,23 +697,25 @@ void main() {
         base2.dispose();
       });
 
-      test('should NOT dispose old base when hotswap with disposeOld=false',
-          () {
-        final base1 = MutableLiveData<int>(10);
-        final base2 = MutableLiveData<int>(20);
-        final hotswap = base1.hotswappable();
+      test(
+        'should NOT dispose old base when hotswap with disposeOld=false',
+        () {
+          final base1 = MutableLiveData<int>(10);
+          final base2 = MutableLiveData<int>(20);
+          final hotswap = base1.hotswappable();
 
-        expect(base1.isDisposed, isFalse);
+          expect(base1.isDisposed, isFalse);
 
-        hotswap.hotswap(base2, disposeOld: false);
+          hotswap.hotswap(base2, disposeOld: false);
 
-        expect(base1.isDisposed, isFalse);
-        expect(base2.isDisposed, isFalse);
+          expect(base1.isDisposed, isFalse);
+          expect(base2.isDisposed, isFalse);
 
-        hotswap.dispose();
-        base1.dispose();
-        base2.dispose();
-      });
+          hotswap.dispose();
+          base1.dispose();
+          base2.dispose();
+        },
+      );
     });
 
     group('Scope Management', () {
@@ -839,31 +841,33 @@ void main() {
         notifier.dispose();
       });
 
-      test('should notify subscribers immediately on hotswap if value changed',
-          () {
-        final base1 = MutableLiveData<int>(10);
-        final base2 = MutableLiveData<int>(20);
-        final hotswap = base1.hotswappable();
+      test(
+        'should notify subscribers immediately on hotswap if value changed',
+        () {
+          final base1 = MutableLiveData<int>(10);
+          final base2 = MutableLiveData<int>(20);
+          final hotswap = base1.hotswappable();
 
-        int? receivedValue;
-        int callCount = 0;
-        hotswap.subscribe((value) {
-          receivedValue = value;
-          callCount++;
-        });
+          int? receivedValue;
+          int callCount = 0;
+          hotswap.subscribe((value) {
+            receivedValue = value;
+            callCount++;
+          });
 
-        expect(receivedValue, 10);
-        expect(callCount, 1);
+          expect(receivedValue, 10);
+          expect(callCount, 1);
 
-        hotswap.hotswap(base2);
+          hotswap.hotswap(base2);
 
-        // Should notify immediately with new value
-        expect(receivedValue, 20);
-        expect(callCount, 2);
+          // Should notify immediately with new value
+          expect(receivedValue, 20);
+          expect(callCount, 2);
 
-        hotswap.dispose();
-        base2.dispose();
-      });
+          hotswap.dispose();
+          base2.dispose();
+        },
+      );
 
       test('should handle hotswap called during notification callback', () {
         final base1 = MutableLiveData<int>(10);

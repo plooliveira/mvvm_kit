@@ -3,10 +3,8 @@ part of 'package:mvvm_kit/src/live_data/live_data.dart';
 extension LiveDataExtensions<T> on LiveData<T> {
   LiveData<T> mirror() => _LiveDataMirror(this);
 
-  LiveData<S> transform<S>(
-    S Function(LiveData<T> data) transform,
-    DataScope? scope,
-  ) => _TransformedLiveDataMirror(this, transform: transform, scope: scope);
+  LiveData<S> transform<S>(S Function(LiveData<T> data) transform) =>
+      _TransformedLiveDataMirror(this, transform: transform);
 
   HotswapLiveData<T> hotswappable([DataScope? scope]) =>
       HotswapLiveData(this, scope);

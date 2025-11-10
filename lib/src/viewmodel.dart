@@ -3,19 +3,21 @@ import 'package:flutter/material.dart';
 
 import 'package:mvvm_kit/mvvm_kit.dart';
 
-abstract class ViewModel extends LifecycleViewModel {
+abstract class ViewModel extends _LifecycleViewModel {
+  ViewModel() {
+    _actionInProgress = mutable(false);
+  }
+
   LiveData<bool> get actionInProgress => _actionInProgress;
-  late final MutableLiveData<bool> _actionInProgress = mutable(false);
+  late final MutableLiveData<bool> _actionInProgress;
 
   void startAction() => _actionInProgress.value = true;
 
   void finishAction() => _actionInProgress.value = false;
 }
 
-abstract class LifecycleViewModel extends ChangeNotifier {
+abstract class _LifecycleViewModel extends ChangeNotifier {
   final DataScope dataScope = DataScope();
-
-  final List<LiveData> _observed = [];
 
   bool _isActive = false;
 
@@ -36,16 +38,9 @@ abstract class LifecycleViewModel extends ChangeNotifier {
 
   Completer _isActiveCompleter = Completer();
 
-  MutableLiveData<T> mutable<T>(T value) {
-    final MutableLiveData<T> observable = MutableLiveData(value);
-    _observed.add(observable);
-    return observable;
-  }
+  MutableLiveData<T> mutable<T>(T value) => dataScope.mutable(value);
 
-  T register<T extends LiveData>(T value) {
-    _observed.add(value);
-    return value;
-  }
+  T register<T extends LiveData>(T value) => dataScope.add(value);
 
   void onActive() {}
 
@@ -53,13 +48,7 @@ abstract class LifecycleViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    for (var observed in _observed.reversed) {
-      observed.dispose();
-    }
-    _observed.clear();
-
     dataScope.dispose();
-
     super.dispose();
   }
 

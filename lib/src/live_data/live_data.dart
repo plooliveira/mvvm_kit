@@ -7,6 +7,7 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 
 part '_mirror.dart';
 part '_filter.dart';
+part '_extensions.dart';
 
 typedef ChangeDetector<T> = bool Function(T a, T b);
 const _deepEquality = DeepCollectionEquality();
@@ -52,7 +53,7 @@ abstract class LiveData<T> extends ChangeNotifier {
   }
 
   /// Creates a nullable LiveData from a Stream
-  /// 
+  ///
   /// Returns a LiveData<T?> that updates when the stream emits values.
   /// The [initialValue] is used as the initial value of the LiveData.
   /// Note: Returns LiveData<T?> because the stream value can be null.
@@ -113,35 +114,30 @@ abstract class LiveData<T> extends ChangeNotifier {
   }
 }
 
-extension LiveDataExtensions<T> on LiveData<T> {
-  LiveData<T> mirror() => _LiveDataMirror(this);
+class MutableLiveData<T> extends LiveData<T> {
+  T _value;
 
-  LiveData<S> transform<S>(
-    S Function(LiveData<T> data) transform,
-    DataScope? scope,
-  ) => _TransformedLiveDataMirror(this, transform: transform, scope: scope);
+  @override
+  T get value => _value;
 
-  HotswapLiveData<T> hotswappable([DataScope? scope]) =>
-      HotswapLiveData(this, scope);
-}
+  MutableLiveData(T super.value, [bool emitAll = false, super.scope])
+    : _value = value {
+    if (emitAll) {
+      changeDetector = (T to, T from) => true;
+    }
+  }
 
-extension ListLiveData<D> on LiveData<Iterable<D>> {
-  bool get isEmpty => value.isEmpty;
+  set value(T to) {
+    if (changeDetector(to, _value)) {
+      _value = to;
+      notifyListeners();
+    }
+  }
 
-  bool get isNotEmpty => value.isNotEmpty;
+  LiveData<T> get immutable => this;
 
-  int get length => value.length;
-
-  Iterable<T> map<T>(T Function(D value) toElement) => value.map(toElement);
-
-  void forEach(void Function(D element) action) => value.forEach(action);
-
-  Iterable<T> expand<T>(Iterable<T> Function(D element) toElements) =>
-      value.expand(toElements);
-
-  LiveData<Iterable<D>> filtered(bool Function(D value) check) =>
-      _AutoDisposeFilter(this, check);
-
-  LiveData<Iterable<D>> notNull() =>
-      _AutoDisposeFilter<D>(this, (value) => value != null);
+  void update(Function(T value) block) {
+    block(_value);
+    notifyListeners();
+  }
 }

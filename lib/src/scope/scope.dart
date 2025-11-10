@@ -5,6 +5,8 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 
 part '_mediator.dart';
 part '_merged.dart';
+part '_extensions.dart';
+part '_dispose.dart';
 
 class DataScope {
   final LinkedHashSet<ChangeNotifier> _items = LinkedHashSet();
@@ -51,57 +53,4 @@ class DataScope {
   }
 
   DataScope child() => DataScope(parent: this);
-}
-
-extension MutableDataScope on DataScope {
-  MutableLiveData<T> mutable<T>(T start) {
-    return add(MutableLiveData(start));
-  }
-
-  MutableLiveData<T> bridgeFrom<T>(LiveData<T> source) {
-    final mirror = add(MutableLiveData<T>(source.value));
-
-    void listener() {
-      mirror.value = source.value;
-    }
-
-    source.addListener(listener);
-
-    final cleanup = _DisposeCallback(() {
-      source.removeListener(listener);
-      if (remove(mirror)) {
-        mirror.dispose();
-      }
-    });
-
-    add(cleanup);
-    return mirror;
-  }
-}
-
-class _DisposeCallback extends ChangeNotifier {
-  final VoidCallback _onDispose;
-  _DisposeCallback(this._onDispose);
-
-  @override
-  void dispose() {
-    try {
-      _onDispose();
-    } finally {
-      super.dispose();
-    }
-  }
-}
-
-extension DataScopeExtensions on DataScope {
-  LiveData<T> join<T>(List<LiveData> sources, T Function() mediate) =>
-      add(_MediatorLiveData(sources, mediate));
-
-  LiveData<T> merge<T>(List<ChangeNotifier> sources, T Function() transform) {
-    return _MergedLiveData<T>(
-      sources: sources,
-      transform: transform,
-      scope: this,
-    );
-  }
 }

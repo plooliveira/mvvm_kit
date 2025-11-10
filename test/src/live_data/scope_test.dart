@@ -244,6 +244,7 @@ void main() {
         parentScope.children,
         isNot(contains(childScope)),
       ); // Child should be removed
+      parentScope.dispose();
     });
 
     test("should add child to parent's children list upon creation", () {
@@ -278,6 +279,33 @@ void main() {
       source = MutableLiveData(10);
     });
 
+    test('mutable should create a MutableLiveData with initial value', () {
+      final liveData = scope.mutable<int>(42);
+
+      expect(liveData, isA<MutableLiveData<int>>());
+      expect(liveData.value, 42);
+      expect(scope.items, contains(liveData));
+    });
+
+    test('mutable should add the created LiveData to the scope', () {
+      final initialCount = scope.items.length;
+      final liveData = scope.mutable<String>('test');
+
+      expect(scope.items.length, initialCount + 1);
+      expect(scope.items, contains(liveData));
+    });
+
+    test('mutable should create different types correctly', () {
+      final intData = scope.mutable<int>(1);
+      final stringData = scope.mutable<String>('hello');
+      final boolData = scope.mutable<bool>(true);
+
+      expect(intData.value, 1);
+      expect(stringData.value, 'hello');
+      expect(boolData.value, true);
+      expect(scope.items.length, 3);
+    });
+
     test(
       'bridgeFrom should create a MutableLiveData with the initial value',
       () {
@@ -308,5 +336,187 @@ void main() {
         expect(source.hasListeners, isFalse);
       },
     );
+  });
+
+  group('DataScopeExtensions - join (Mediator)', () {
+    late DataScope scope;
+
+    setUp(() {
+      scope = DataScope();
+    });
+
+    test('join should create LiveData that mediates multiple sources', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final mediated = scope.join<int>(
+        [source1, source2],
+        () => source1.value + source2.value,
+      );
+
+      expect(mediated.value, 30);
+      expect(scope.items, contains(mediated));
+    });
+
+    test('join should update when any source changes', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final mediated = scope.join<int>(
+        [source1, source2],
+        () => source1.value + source2.value,
+      );
+
+      expect(mediated.value, 30);
+
+      source1.value = 15;
+      expect(mediated.value, 35);
+
+      source2.value = 25;
+      expect(mediated.value, 40);
+    });
+
+    test('join should notify listeners when mediated value changes', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final mediated = scope.join<int>(
+        [source1, source2],
+        () => source1.value + source2.value,
+      );
+
+      int? receivedValue;
+      int callCount = 0;
+      mediated.subscribe((value) {
+        receivedValue = value;
+        callCount++;
+      });
+
+      expect(callCount, 1);
+      expect(receivedValue, 30);
+
+      source1.value = 100;
+      expect(callCount, 2);
+      expect(receivedValue, 120);
+    });
+
+    test('join should dispose and unsubscribe from sources', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final mediated = scope.join<int>(
+        [source1, source2],
+        () => source1.value + source2.value,
+      );
+
+      expect(mediated.isDisposed, isFalse);
+
+      scope.dispose();
+
+      expect(mediated.isDisposed, isTrue);
+      // Should have unsubscribed from sources (can be verified by updating sources)
+      final oldValue = mediated.value;
+      source1.value = 999;
+      // Value shouldn't change after dispose
+      expect(mediated.value, oldValue);
+    });
+  });
+
+  group('DataScopeExtensions - merge', () {
+    late DataScope scope;
+
+    setUp(() {
+      scope = DataScope();
+    });
+
+    test('merge should create LiveData that transforms multiple sources', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final merged = scope.merge<String>(
+        [source1, source2],
+        () => '${source1.value}:${source2.value}',
+      );
+
+      expect(merged.value, '10:20');
+      expect(scope.items, contains(merged));
+    });
+
+    test('merge should update when any source changes', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final merged = scope.merge<String>(
+        [source1, source2],
+        () => '${source1.value}:${source2.value}',
+      );
+
+      expect(merged.value, '10:20');
+
+      source1.value = 30;
+      expect(merged.value, '30:20');
+
+      source2.value = 40;
+      expect(merged.value, '30:40');
+    });
+
+    test('merge should notify listeners when transformed value changes', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final merged = scope.merge<String>(
+        [source1, source2],
+        () => '${source1.value}:${source2.value}',
+      );
+
+      String? receivedValue;
+      int callCount = 0;
+      merged.subscribe((value) {
+        receivedValue = value;
+        callCount++;
+      });
+
+      expect(callCount, 1);
+      expect(receivedValue, '10:20');
+
+      source1.value = 100;
+      expect(callCount, 2);
+      expect(receivedValue, '100:20');
+    });
+
+    test('merge should dispose when scope is disposed', () {
+      final source1 = MutableLiveData<int>(10);
+      final source2 = MutableLiveData<int>(20);
+
+      final merged = scope.merge<String>(
+        [source1, source2],
+        () => '${source1.value}:${source2.value}',
+      );
+
+      expect(merged.isDisposed, isFalse);
+
+      scope.dispose();
+
+      expect(merged.isDisposed, isTrue);
+    });
+
+    test('merge should work with different types of ChangeNotifiers', () {
+      final liveData = MutableLiveData<int>(10);
+      final notifier = MockChangeNotifier();
+
+      final merged = scope.merge<String>(
+        [liveData, notifier],
+        () => 'value:${liveData.value}',
+      );
+
+      expect(merged.value, 'value:10');
+
+      liveData.value = 20;
+      expect(merged.value, 'value:20');
+
+      // Notify the MockChangeNotifier
+      notifier.notifyListeners();
+      expect(merged.value, 'value:20'); // Still same because transform didn't change
+    });
   });
 }

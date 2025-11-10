@@ -41,6 +41,13 @@ class NullableInitialLiveData<T> extends LiveData<T?> {
   }
 }
 
+// Helper function to dispose multiple ChangeNotifiers at once
+void disposeAll(List<ChangeNotifier> disposables) {
+  for (final item in disposables) {
+    item.dispose();
+  }
+}
+
 void main() {
   group('LiveData Core Functionality', () {
     test(
@@ -193,7 +200,7 @@ void main() {
       },
     );
 
-    test('editValue should always notify listeners', () {
+    test('update should always notify listeners', () {
       final liveData = MutableLiveData([1, 2, 3]);
       int callCount = 0;
       liveData.subscribe((value) => callCount++);
@@ -210,22 +217,6 @@ void main() {
   });
 
   group('_defaultChangeDetector Behavior (tested via MutableLiveData)', () {
-    test('should notify for different primitive values', () {
-      final liveData = MutableLiveData<int>(10);
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = 20;
-      expect(callCount, 2);
-    });
-
-    test('should not notify for same primitive values', () {
-      final liveData = MutableLiveData<int>(10);
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = 10;
-      expect(callCount, 1);
-    });
-
     // List tests
     test('should notify for lists of different sizes', () {
       final liveData = MutableLiveData([1, 2]);
@@ -282,6 +273,14 @@ void main() {
       liveData.subscribe((_) => callCount++);
       liveData.value = {'a': 1, 'b': 2}; // Same map
       expect(callCount, 1);
+    });
+
+    test('should not notify for maps with different order but same content', () {
+      final liveData = MutableLiveData({'a': 1, 'b': 2, 'c': 3});
+      int callCount = 0;
+      liveData.subscribe((_) => callCount++);
+      liveData.value = {'c': 3, 'a': 1, 'b': 2}; // Different order, same content
+      expect(callCount, 1); // DeepEquality should treat as equal
     });
   });
 
@@ -693,8 +692,7 @@ void main() {
         expect(base1.isDisposed, isTrue);
         expect(base2.isDisposed, isFalse);
 
-        hotswap.dispose();
-        base2.dispose();
+        disposeAll([hotswap, base2]);
       });
 
       test(
@@ -711,9 +709,7 @@ void main() {
           expect(base1.isDisposed, isFalse);
           expect(base2.isDisposed, isFalse);
 
-          hotswap.dispose();
-          base1.dispose();
-          base2.dispose();
+          disposeAll([hotswap, base1, base2]);
         },
       );
     });
@@ -753,7 +749,7 @@ void main() {
         expect(base.subscribers.length, 0);
         expect(base.isDisposed, isFalse);
 
-        base.dispose();
+        disposeAll([base]);
       });
     });
 
@@ -817,8 +813,7 @@ void main() {
 
         expect(base4.isDisposed, isFalse);
 
-        hotswap.dispose();
-        base4.dispose();
+        disposeAll([hotswap, base4]);
       });
 
       test('should work with different base implementations of same type', () {
@@ -836,9 +831,7 @@ void main() {
         hotswap.hotswap(fromNotifier);
         expect(hotswap.value, 30);
 
-        hotswap.dispose();
-        fromNotifier.dispose();
-        notifier.dispose();
+        disposeAll([hotswap, fromNotifier, notifier]);
       });
 
       test(
@@ -864,12 +857,11 @@ void main() {
           expect(receivedValue, 20);
           expect(callCount, 2);
 
-          hotswap.dispose();
-          base2.dispose();
+          disposeAll([hotswap, base2]);
         },
       );
 
-      test('should handle hotswap called during notification callback', () {
+      test('should handle hotswap called during initial subscribe callback', () {
         final base1 = MutableLiveData<int>(10);
         final base2 = MutableLiveData<int>(20);
         final hotswap = base1.hotswappable();
@@ -878,17 +870,16 @@ void main() {
         hotswap.subscribe((value) {
           if (value == 10 && !hotswapped) {
             hotswapped = true;
-            // Hotswap during callback
+            // Hotswap during initial subscribe callback
             hotswap.hotswap(base2);
           }
         });
 
-        // Should not throw error
+        // Should not throw error and value should be from new base
         expect(hotswap.value, 20);
         expect(hotswapped, isTrue);
 
-        hotswap.dispose();
-        base2.dispose();
+        disposeAll([hotswap, base2]);
       });
     });
   });

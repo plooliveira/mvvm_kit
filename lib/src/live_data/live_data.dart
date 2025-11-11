@@ -9,6 +9,9 @@ part '_mirror.dart';
 part '_filter.dart';
 part '_extensions.dart';
 
+/// A function that determines if a value has changed.
+///
+/// Returns `true` if [a] and [b] are different values.
 typedef ChangeDetector<T> = bool Function(T a, T b);
 const _deepEquality = DeepCollectionEquality();
 
@@ -21,6 +24,36 @@ bool _defaultChangeDetector<T>(T to, T from) {
   }
 }
 
+/// An observable data holder for the MVVM pattern.
+///
+/// [LiveData] is the core class of the mvvm_kit package. It holds a value
+/// and notifies observers when that value changes. Use it with [Watch] or
+/// [GroupWatch] widgets to automatically rebuild UI when data changes.
+///
+/// This is an abstract class. Use [MutableLiveData] for data you can modify,
+/// or create instances using factory methods like [LiveData.fromValueNotifier]
+/// and [LiveData.fromStream].
+///
+/// Example:
+/// ```dart
+/// class CounterViewModel extends ViewModel {
+///   final _counter = MutableLiveData(0);
+///   LiveData<int> get counter => _counter;
+///
+///   void increment() => _counter.value++;
+/// }
+///
+/// // In your widget:
+/// Watch(
+///   viewModel.counter,
+///   builder: (context, value) => Text('$value'),
+/// )
+/// ```
+///
+/// See also:
+/// * [MutableLiveData], for creating mutable observable data
+/// * [Watch], for observing a single LiveData in widgets
+/// * [GroupWatch], for observing multiple LiveData objects
 abstract class LiveData<T> extends ChangeNotifier {
   bool _isDisposed = false;
 
@@ -34,6 +67,10 @@ abstract class LiveData<T> extends ChangeNotifier {
   @visibleForTesting
   List<Function(T)> get subscribers => _subscribers;
 
+  /// The current value held by this LiveData.
+  ///
+  /// Accessing this getter returns the current value without triggering
+  /// any notifications. To observe changes, use [Watch] widget or [subscribe].
   T get value;
 
   T? _lastNotifyCheck;
@@ -44,7 +81,18 @@ abstract class LiveData<T> extends ChangeNotifier {
     parentScope?.add(this);
   }
 
-  /// Creates a LiveData from a ValueNotifier
+  /// Converts a [ValueNotifier] into a [LiveData].
+  ///
+  /// Creates a new LiveData that observes the given [notifier] and
+  /// automatically synchronizes when the notifier's value changes.
+  /// The original [ValueNotifier] remains independent and functional.
+  ///
+  /// Example:
+  /// ```dart
+  /// final notifier = ValueNotifier<int>(0);
+  /// final liveData = LiveData.fromValueNotifier(notifier);
+  /// notifier.value = 1; // liveData updates automatically
+  /// ```
   factory LiveData.fromValueNotifier(
     ValueNotifier<T> notifier, [
     DataScope? scope,
@@ -52,11 +100,19 @@ abstract class LiveData<T> extends ChangeNotifier {
     return _ValueNotifierData(notifier, scope);
   }
 
-  /// Creates a nullable LiveData from a Stream
+  /// Creates a nullable LiveData from a [Stream].
   ///
-  /// Returns a LiveData<T?> that updates when the stream emits values.
-  /// The [initialValue] is used as the initial value of the LiveData.
-  /// Note: Returns LiveData<T?> because the stream value can be null.
+  /// Returns a `LiveData<T?>` that updates automatically when the stream
+  /// emits new values. The [initialValue] is used until the first stream
+  /// emission.
+  ///
+  /// Note: Returns `LiveData<T?>` because stream values can be null.
+  ///
+  /// Example:
+  /// ```dart
+  /// final stream = Stream.periodic(Duration(seconds: 1), (i) => i);
+  /// final liveData = LiveData.fromStream(stream, 0);
+  /// ```
   static LiveData<T?> fromStream<T>(
     Stream<T> stream,
     T initialValue, [
@@ -65,10 +121,37 @@ abstract class LiveData<T> extends ChangeNotifier {
     return _StreamData<T, T, Stream<T>>(stream, scope, value: initialValue);
   }
 
+  /// Shorthand for accessing [value].
+  ///
+  /// Allows calling the LiveData instance as a function to get its value.
+  ///
+  /// Example:
+  /// ```dart
+  /// final data = MutableLiveData(42);
+  /// print(data()); // prints: 42
+  /// ```
   T call() => value;
 
+  /// Function that determines if the value has changed.
+  ///
+  /// Override this to customize change detection behavior. By default,
+  /// uses deep equality for collections and standard equality for other types.
   late ChangeDetector<T> changeDetector = _defaultChangeDetector;
 
+  /// Subscribes to value changes with a callback function.
+  ///
+  /// The [callback] is immediately invoked with the current value, then
+  /// called again whenever the value changes. Returns this LiveData instance
+  /// for method chaining.
+  ///
+  /// Use [unsubscribe] to remove the callback later.
+  ///
+  /// Example:
+  /// ```dart
+  /// liveData.subscribe((value) {
+  ///   print('Value changed to: $value');
+  /// });
+  /// ```
   LiveData<T> subscribe(Function(T value) callback) {
     if (!_subscribers.contains(callback)) {
       _subscribers.add(callback);
@@ -77,14 +160,37 @@ abstract class LiveData<T> extends ChangeNotifier {
     return this;
   }
 
+  /// Forces notification of all observers even if the value hasn't changed.
+  ///
+  /// Useful when you need to trigger a UI rebuild or callback execution
+  /// without actually changing the underlying value.
   void reload() {
     notifyListeners();
   }
 
+  /// Removes a previously registered callback.
+  ///
+  /// Use this to stop receiving notifications from a [subscribe] callback.
+  ///
+  /// Example:
+  /// ```dart
+  /// void onValueChanged(int value) => print(value);
+  /// 
+  /// liveData.subscribe(onValueChanged);
+  /// // later...
+  /// liveData.unsubscribe(onValueChanged);
+  /// ```
   void unsubscribe(Function(T value) callback) {
     _subscribers.remove(callback);
   }
 
+  /// Notifies all observers only if the value has changed.
+  ///
+  /// Compares the current value with the last notified value using
+  /// [changeDetector]. Only triggers notifications if they differ.
+  /// This is used internally but can be useful when extending LiveData.
+  ///
+  /// Use [reload] if you want to force notification regardless of changes.
   void notifyIfChanged() {
     final T currentValue = value;
     if (_lastNotifyCheck == null ||
@@ -94,6 +200,13 @@ abstract class LiveData<T> extends ChangeNotifier {
     }
   }
 
+  /// Notifies all observers and executes all subscribed callbacks.
+  ///
+  /// This override ensures that both Flutter's [ChangeNotifier] listeners
+  /// and [subscribe] callbacks are invoked with the current value.
+  ///
+  /// Typically you don't need to call this directly - use [reload] or
+  /// modify values through [MutableLiveData.value] instead.
   @override
   void notifyListeners() {
     super.notifyListeners();
@@ -104,6 +217,14 @@ abstract class LiveData<T> extends ChangeNotifier {
     }
   }
 
+  /// Disposes this LiveData and cleans up all resources.
+  ///
+  /// Clears all subscribers, disposes the internal [scope], and removes
+  /// this LiveData from its [parentScope]. After calling dispose, this
+  /// LiveData should not be used anymore.
+  ///
+  /// The [ViewModel] automatically disposes all LiveData instances
+  /// registered in its scope, so manual disposal is usually not needed.
   @override
   void dispose() {
     _isDisposed = true;

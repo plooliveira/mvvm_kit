@@ -11,7 +11,7 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 ///
 /// Key features:
 /// * Automatic lifecycle management with [onActive] and [onInactive]
-/// * Built-in [actionInProgress] for tracking long-running operations
+/// * Built-in [isLoading] for tracking long-running operations
 /// * Automatic disposal of all registered [LiveData] instances
 /// * Methods [mutable] and [register] for creating observable data
 ///
@@ -38,12 +38,12 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 /// * [DataScope], for managing LiveData lifecycle
 abstract class ViewModel extends _LifecycleViewModel {
   ViewModel() {
-    _actionInProgress = mutable(false);
+    _isLoading = mutable(false);
   }
 
   /// Observable flag indicating if a long-running action is in progress.
   ///
-  /// Use [startAction] and [finishAction] to control this flag.
+  /// Use [beginLoading] and [completeLoading] to control this flag.
   /// Useful for showing loading indicators in the UI.
   ///
   /// Example:
@@ -57,19 +57,19 @@ abstract class ViewModel extends _LifecycleViewModel {
   ///   }
   /// }
   /// ```
-  LiveData<bool> get actionInProgress => _actionInProgress;
-  late final MutableLiveData<bool> _actionInProgress;
+  LiveData<bool> get isLoading => _isLoading;
+  late final MutableLiveData<bool> _isLoading;
 
   /// Marks the start of a long-running action.
   ///
-  /// Sets [actionInProgress] to `true`. Always pair with [finishAction]
+  /// Sets [isLoading] to `true`. Always pair with [completeLoading]
   /// to avoid leaving the action state active indefinitely.
-  void startAction() => _actionInProgress.value = true;
+  void beginLoading() => _isLoading.value = true;
 
   /// Marks the end of a long-running action.
   ///
-  /// Sets [actionInProgress] to `false`.
-  void finishAction() => _actionInProgress.value = false;
+  /// Sets [isLoading] to `false`.
+  void completeLoading() => _isLoading.value = false;
 }
 
 abstract class _LifecycleViewModel extends ChangeNotifier {

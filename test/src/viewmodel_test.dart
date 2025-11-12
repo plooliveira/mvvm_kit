@@ -224,7 +224,7 @@ void main() {
     });
   });
 
-  group('ViewModel - Action Management', () {
+  group('ViewModel - Loading Management', () {
     late TestViewModel viewModel;
 
     setUp(() {
@@ -235,50 +235,47 @@ void main() {
       viewModel.dispose();
     });
 
-    test('actionInProgress should start as false', () {
-      expect(viewModel.actionInProgress.value, false);
+    test('isLoading should start as false', () {
+      expect(viewModel.isLoading.value, false);
     });
 
-    test('actionInProgress should be a LiveData<bool>', () {
-      expect(viewModel.actionInProgress, isA<LiveData<bool>>());
+    test('isLoading should be a LiveData<bool>', () {
+      expect(viewModel.isLoading, isA<LiveData<bool>>());
     });
 
-    test('startAction should set actionInProgress to true', () {
-      expect(viewModel.actionInProgress.value, false);
+    test('beginLoading should set isLoading to true', () {
+      expect(viewModel.isLoading.value, false);
 
-      viewModel.startAction();
+      viewModel.beginLoading();
 
-      expect(viewModel.actionInProgress.value, true);
+      expect(viewModel.isLoading.value, true);
     });
 
-    test('finishAction should set actionInProgress to false', () {
-      viewModel.startAction();
-      expect(viewModel.actionInProgress.value, true);
+    test('completeLoading should set isLoading to false', () {
+      viewModel.beginLoading();
+      expect(viewModel.isLoading.value, true);
 
-      viewModel.finishAction();
+      viewModel.completeLoading();
 
-      expect(viewModel.actionInProgress.value, false);
+      expect(viewModel.isLoading.value, false);
     });
 
-    test('actionInProgress should notify listeners on change', () {
+    test('isLoading should notify listeners on change', () {
       int notifyCount = 0;
       void listener() => notifyCount++;
 
-      viewModel.actionInProgress.addListener(listener);
+      viewModel.isLoading.addListener(listener);
 
-      viewModel.startAction();
+      viewModel.beginLoading();
       expect(notifyCount, 1);
 
-      viewModel.finishAction();
+      viewModel.completeLoading();
       expect(notifyCount, 2);
-      viewModel.actionInProgress.removeListener(listener);
+      viewModel.isLoading.removeListener(listener);
     });
 
-    test('actionInProgress should be managed by dataScope', () {
-      expect(
-        viewModel.dataScope.items.contains(viewModel.actionInProgress),
-        true,
-      );
+    test('isLoading should be managed by dataScope', () {
+      expect(viewModel.dataScope.items.contains(viewModel.isLoading), true);
     });
   });
 
@@ -295,14 +292,14 @@ void main() {
       viewModel.register(data1);
       viewModel.register(data2);
 
-      final actionInProgress = viewModel.actionInProgress;
+      final isLoading = viewModel.isLoading;
 
       // Verify all are not disposed
       expect(counter1.isDisposed, false);
       expect(counter2.isDisposed, false);
       expect(data1.isDisposed, false);
       expect(data2.isDisposed, false);
-      expect(actionInProgress.isDisposed, false);
+      expect(isLoading.isDisposed, false);
       expect(viewModel.dataScope.items.isNotEmpty, true);
 
       viewModel.dispose();
@@ -312,7 +309,7 @@ void main() {
       expect(counter2.isDisposed, true);
       expect(data1.isDisposed, true);
       expect(data2.isDisposed, true);
-      expect(actionInProgress.isDisposed, true);
+      expect(isLoading.isDisposed, true);
       expect(viewModel.dataScope.items.isEmpty, true);
     });
 
@@ -332,7 +329,7 @@ void main() {
 
       viewModel.dispose();
 
-      // Should dispose in reverse order: data3, data2, data1, actionInProgress
+      // Should dispose in reverse order: data3, data2, data1, isLoading
       // We only check the ones we registered
       expect(disposalOrder, ['data3', 'data2', 'data1']);
       expect(viewModel.dataScope.items.isEmpty, true);
@@ -360,18 +357,18 @@ void main() {
       counter.value = 10;
       expect(counter.value, 10);
 
-      // Start action
-      viewModel.startAction();
-      expect(viewModel.actionInProgress.value, true);
+      // Start loading
+      viewModel.beginLoading();
+      expect(viewModel.isLoading.value, true);
 
-      // Finish action
-      viewModel.finishAction();
-      expect(viewModel.actionInProgress.value, false);
+      // Finish loading
+      viewModel.completeLoading();
+      expect(viewModel.isLoading.value, false);
 
       // Dispose
       viewModel.dispose();
       expect(counter.isDisposed, true);
-      expect(viewModel.actionInProgress.isDisposed, true);
+      expect(viewModel.isLoading.isDisposed, true);
     });
 
     test('lifecycle with data management', () {

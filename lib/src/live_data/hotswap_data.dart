@@ -20,7 +20,7 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 /// ```
 ///
 /// See also:
-/// * [LiveData.hotswappable], extension method to create HotswapLiveData
+/// * [LiveDataExtensions.hotswappable], extension method to create HotswapLiveData
 class HotswapLiveData<T> extends LiveData<T> {
   late LiveData<T> _base;
 

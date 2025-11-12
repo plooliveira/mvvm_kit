@@ -70,6 +70,15 @@ abstract class ViewModel extends _LifecycleViewModel {
   ///
   /// Sets [isLoading] to `false`.
   void completeLoading() => _isLoading.value = false;
+
+  Future<T> executeAsync<T>(Future<T> Function() action) async {
+    beginLoading();
+    try {
+      return await action();
+    } finally {
+      completeLoading();
+    }
+  }
 }
 
 abstract class _LifecycleViewModel extends ChangeNotifier {

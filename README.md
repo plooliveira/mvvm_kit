@@ -150,7 +150,7 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 - **LiveData**: Observable data holders that notify observers when values change,
 - **ViewModel**: Lifecycle-aware UI logic layer with automatic resource management
 - **Watch/GroupWatch**: Widgets for observing LiveData changes
-- **DataScope**:Container that automatically disposes LiveData instances when no longer needed, preventing memory leaks
+- **DataScope**: Container that automatically disposes LiveData instances when no longer needed, preventing memory leaks
 - **Transformations**: `transform()`, `filtered()`, `mirror()` for data manipulation
 - **HotswapLiveData**: Dynamically switch between data sources
 

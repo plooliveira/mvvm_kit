@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../lib/mvvm_kit.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 // Mocks for testing
 class MockChangeNotifier extends ChangeNotifier {

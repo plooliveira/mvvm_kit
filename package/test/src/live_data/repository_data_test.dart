@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/mvvm_kit.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
 
 void main() {
   group('LiveRepositoryData', () {

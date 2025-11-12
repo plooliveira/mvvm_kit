@@ -142,11 +142,11 @@ void main() {
     });
 
     test('mutable should add LiveData to dataScope', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       final counter = viewModel.mutable<int>(0);
-      expect(viewModel.dataScope.items.contains(counter), true);
-      expect(viewModel.dataScope.items.length, initialCount + 1);
+      expect(viewModel.scope.items.contains(counter), true);
+      expect(viewModel.scope.items.length, initialCount + 1);
     });
 
     test('mutable LiveData should be mutable', () {
@@ -158,7 +158,7 @@ void main() {
     });
 
     test('should allow creating multiple mutable LiveData', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       final counter1 = viewModel.mutable<int>(1);
       final counter2 = viewModel.mutable<int>(2);
@@ -167,17 +167,17 @@ void main() {
       expect(counter1.value, 1);
       expect(counter2.value, 2);
       expect(name.value, 'test');
-      expect(viewModel.dataScope.items.length, initialCount + 3);
+      expect(viewModel.scope.items.length, initialCount + 3);
     });
 
     test('register should add existing LiveData to dataScope', () {
       final existingData = MutableLiveData<String>('hello');
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       viewModel.register(existingData);
 
-      expect(viewModel.dataScope.items.contains(existingData), true);
-      expect(viewModel.dataScope.items.length, initialCount + 1);
+      expect(viewModel.scope.items.contains(existingData), true);
+      expect(viewModel.scope.items.length, initialCount + 1);
     });
 
     test('register should return the same LiveData instance', () {
@@ -186,7 +186,7 @@ void main() {
       final returned = viewModel.register(existingData);
 
       expect(identical(returned, existingData), true);
-      expect(viewModel.dataScope.items.contains(existingData), true);
+      expect(viewModel.scope.items.contains(existingData), true);
     });
 
     test('register should work with transformations', () {
@@ -196,31 +196,31 @@ void main() {
       viewModel.register(transformed);
 
       expect(transformed.value, 20);
-      expect(viewModel.dataScope.items.contains(transformed), true);
+      expect(viewModel.scope.items.contains(transformed), true);
     });
 
     test('should allow multiple register calls', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
       final data1 = MutableLiveData<int>(1);
       final data2 = MutableLiveData<int>(2);
 
       viewModel.register(data1);
       viewModel.register(data2);
 
-      expect(viewModel.dataScope.items.contains(data1), true);
-      expect(viewModel.dataScope.items.contains(data2), true);
-      expect(viewModel.dataScope.items.length, initialCount + 2);
+      expect(viewModel.scope.items.contains(data1), true);
+      expect(viewModel.scope.items.contains(data2), true);
+      expect(viewModel.scope.items.length, initialCount + 2);
     });
 
     test('mutable and register can be combined', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
       final mutableData = viewModel.mutable<int>(1);
       final existingData = MutableLiveData<int>(2);
       viewModel.register(existingData);
 
-      expect(viewModel.dataScope.items.contains(mutableData), true);
-      expect(viewModel.dataScope.items.contains(existingData), true);
-      expect(viewModel.dataScope.items.length, initialCount + 2);
+      expect(viewModel.scope.items.contains(mutableData), true);
+      expect(viewModel.scope.items.contains(existingData), true);
+      expect(viewModel.scope.items.length, initialCount + 2);
     });
   });
 
@@ -275,7 +275,7 @@ void main() {
     });
 
     test('isLoading should be managed by dataScope', () {
-      expect(viewModel.dataScope.items.contains(viewModel.isLoading), true);
+      expect(viewModel.scope.items.contains(viewModel.isLoading), true);
     });
   });
 
@@ -300,7 +300,7 @@ void main() {
       expect(data1.isDisposed, false);
       expect(data2.isDisposed, false);
       expect(isLoading.isDisposed, false);
-      expect(viewModel.dataScope.items.isNotEmpty, true);
+      expect(viewModel.scope.items.isNotEmpty, true);
 
       viewModel.dispose();
 
@@ -310,7 +310,7 @@ void main() {
       expect(data1.isDisposed, true);
       expect(data2.isDisposed, true);
       expect(isLoading.isDisposed, true);
-      expect(viewModel.dataScope.items.isEmpty, true);
+      expect(viewModel.scope.items.isEmpty, true);
     });
 
     test('DataScope disposes items in reverse order (LIFO)', () {
@@ -332,7 +332,7 @@ void main() {
       // Should dispose in reverse order: data3, data2, data1, isLoading
       // We only check the ones we registered
       expect(disposalOrder, ['data3', 'data2', 'data1']);
-      expect(viewModel.dataScope.items.isEmpty, true);
+      expect(viewModel.scope.items.isEmpty, true);
     });
 
     test('multiple dispose calls should throw FlutterError', () {

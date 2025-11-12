@@ -77,7 +77,7 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
   ///
   /// All LiveData created with [mutable] or [register] are automatically
   /// added to this scope and disposed when the ViewModel is disposed.
-  final DataScope dataScope = DataScope();
+  final DataScope scope = DataScope();
 
   bool _isActive = false;
 
@@ -116,7 +116,7 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
   ///   LiveData<String> get name => _name;
   /// }
   /// ```
-  MutableLiveData<T> mutable<T>(T value) => dataScope.mutable(value);
+  MutableLiveData<T> mutable<T>(T value) => scope.mutable(value);
 
   /// Registers an existing [LiveData] in the ViewModel's scope.
   ///
@@ -128,7 +128,7 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
   /// ```dart
   /// final custom = register(CustomLiveData());
   /// ```
-  T register<T extends LiveData>(T value) => dataScope.add(value);
+  T register<T extends LiveData>(T value) => scope.add(value);
 
   /// Called when the associated view becomes active (visible).
   ///
@@ -160,7 +160,7 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    dataScope.dispose();
+    scope.dispose();
     super.dispose();
   }
 

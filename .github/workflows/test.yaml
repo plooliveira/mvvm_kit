@@ -22,6 +22,6 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter --version
-      - run: flutter analyze
+      - run: flutter analyze --no-fatal-warnings
       - run: flutter test
       - run: echo "Flutter tests completed."

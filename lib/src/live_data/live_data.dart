@@ -235,12 +235,47 @@ abstract class LiveData<T> extends ChangeNotifier {
   }
 }
 
+/// A mutable version of [LiveData] that allows changing its value.
+///
+/// [MutableLiveData] extends [LiveData] with the ability to modify the
+/// stored value. When the value is set, all observers are automatically
+/// notified (if the value actually changed according to [changeDetector]).
+///
+/// This is the most commonly used LiveData type in ViewModels for
+/// managing state that changes over time.
+///
+/// Example:
+/// ```dart
+/// class CounterViewModel extends ViewModel {
+///   final _counter = MutableLiveData(0);
+///   LiveData<int> get counter => _counter;
+///
+///   void increment() {
+///     _counter.value++; // Automatically notifies observers
+///   }
+/// }
+/// ```
+///
+/// See also:
+/// * [LiveData], the immutable base class
+/// * [ViewModel.mutable], for creating MutableLiveData in a ViewModel scope
 class MutableLiveData<T> extends LiveData<T> {
   T _value;
 
   @override
   T get value => _value;
 
+  /// Creates a [MutableLiveData] with an initial value.
+  ///
+  /// The [emitAll] parameter, when set to `true`, forces notifications
+  /// for every assignment, even if the value hasn't changed. By default,
+  /// notifications only occur when the value actually changes.
+  ///
+  /// Example:
+  /// ```dart
+  /// final counter = MutableLiveData(0);
+  /// final alwaysNotify = MutableLiveData(0, true);
+  /// ```
   MutableLiveData(T super.value, [bool emitAll = false, super.scope])
     : _value = value {
     if (emitAll) {
@@ -248,6 +283,18 @@ class MutableLiveData<T> extends LiveData<T> {
     }
   }
 
+  /// Sets a new value and notifies observers if it has changed.
+  ///
+  /// Uses [changeDetector] to determine if the value has actually changed.
+  /// Only notifies observers when the new value differs from the current one
+  /// (unless [emitAll] was set to `true` in the constructor).
+  ///
+  /// Example:
+  /// ```dart
+  /// final name = MutableLiveData('John');
+  /// name.value = 'Jane'; // Notifies observers
+  /// name.value = 'Jane'; // Does NOT notify (same value)
+  /// ```
   set value(T to) {
     if (changeDetector(to, _value)) {
       _value = to;
@@ -255,8 +302,36 @@ class MutableLiveData<T> extends LiveData<T> {
     }
   }
 
+  /// Returns this MutableLiveData as a [LiveData] reference.
+  ///
+  /// This doesn't create a true immutable copy, but returns the same
+  /// instance typed as [LiveData]. Useful for exposing the LiveData
+  /// through a public getter while keeping the mutable field private.
+  ///
+  /// Note: Callers can still cast back to MutableLiveData if needed.
+  ///
+  /// Example:
+  /// ```dart
+  /// class MyViewModel extends ViewModel {
+  ///   final _data = MutableLiveData(0);
+  ///   LiveData<int> get data => _data.immutable;
+  ///   // or simply: LiveData<int> get data => _data;
+  /// }
+  /// ```
   LiveData<T> get immutable => this;
 
+  /// Updates the value by applying a transformation function.
+  ///
+  /// This is useful when you need to modify a complex object in place
+  /// without replacing it entirely. The [block] function receives the
+  /// current value and can modify it. After the block executes, all
+  /// observers are notified.
+  ///
+  /// Example:
+  /// ```dart
+  /// final list = MutableLiveData<List<int>>([1, 2, 3]);
+  /// list.update((value) => value.add(4)); // Adds 4 and notifies
+  /// ```
   void update(Function(T value) block) {
     block(_value);
     notifyListeners();

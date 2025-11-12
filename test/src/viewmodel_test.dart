@@ -142,11 +142,11 @@ void main() {
     });
 
     test('mutable should add LiveData to dataScope', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       final counter = viewModel.mutable<int>(0);
-      expect(viewModel.dataScope.items.contains(counter), true);
-      expect(viewModel.dataScope.items.length, initialCount + 1);
+      expect(viewModel.scope.items.contains(counter), true);
+      expect(viewModel.scope.items.length, initialCount + 1);
     });
 
     test('mutable LiveData should be mutable', () {
@@ -158,7 +158,7 @@ void main() {
     });
 
     test('should allow creating multiple mutable LiveData', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       final counter1 = viewModel.mutable<int>(1);
       final counter2 = viewModel.mutable<int>(2);
@@ -167,17 +167,17 @@ void main() {
       expect(counter1.value, 1);
       expect(counter2.value, 2);
       expect(name.value, 'test');
-      expect(viewModel.dataScope.items.length, initialCount + 3);
+      expect(viewModel.scope.items.length, initialCount + 3);
     });
 
     test('register should add existing LiveData to dataScope', () {
       final existingData = MutableLiveData<String>('hello');
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
 
       viewModel.register(existingData);
 
-      expect(viewModel.dataScope.items.contains(existingData), true);
-      expect(viewModel.dataScope.items.length, initialCount + 1);
+      expect(viewModel.scope.items.contains(existingData), true);
+      expect(viewModel.scope.items.length, initialCount + 1);
     });
 
     test('register should return the same LiveData instance', () {
@@ -186,7 +186,7 @@ void main() {
       final returned = viewModel.register(existingData);
 
       expect(identical(returned, existingData), true);
-      expect(viewModel.dataScope.items.contains(existingData), true);
+      expect(viewModel.scope.items.contains(existingData), true);
     });
 
     test('register should work with transformations', () {
@@ -196,35 +196,35 @@ void main() {
       viewModel.register(transformed);
 
       expect(transformed.value, 20);
-      expect(viewModel.dataScope.items.contains(transformed), true);
+      expect(viewModel.scope.items.contains(transformed), true);
     });
 
     test('should allow multiple register calls', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
       final data1 = MutableLiveData<int>(1);
       final data2 = MutableLiveData<int>(2);
 
       viewModel.register(data1);
       viewModel.register(data2);
 
-      expect(viewModel.dataScope.items.contains(data1), true);
-      expect(viewModel.dataScope.items.contains(data2), true);
-      expect(viewModel.dataScope.items.length, initialCount + 2);
+      expect(viewModel.scope.items.contains(data1), true);
+      expect(viewModel.scope.items.contains(data2), true);
+      expect(viewModel.scope.items.length, initialCount + 2);
     });
 
     test('mutable and register can be combined', () {
-      final initialCount = viewModel.dataScope.items.length;
+      final initialCount = viewModel.scope.items.length;
       final mutableData = viewModel.mutable<int>(1);
       final existingData = MutableLiveData<int>(2);
       viewModel.register(existingData);
 
-      expect(viewModel.dataScope.items.contains(mutableData), true);
-      expect(viewModel.dataScope.items.contains(existingData), true);
-      expect(viewModel.dataScope.items.length, initialCount + 2);
+      expect(viewModel.scope.items.contains(mutableData), true);
+      expect(viewModel.scope.items.contains(existingData), true);
+      expect(viewModel.scope.items.length, initialCount + 2);
     });
   });
 
-  group('ViewModel - Action Management', () {
+  group('ViewModel - Loading Management', () {
     late TestViewModel viewModel;
 
     setUp(() {
@@ -235,50 +235,47 @@ void main() {
       viewModel.dispose();
     });
 
-    test('actionInProgress should start as false', () {
-      expect(viewModel.actionInProgress.value, false);
+    test('isLoading should start as false', () {
+      expect(viewModel.isLoading.value, false);
     });
 
-    test('actionInProgress should be a LiveData<bool>', () {
-      expect(viewModel.actionInProgress, isA<LiveData<bool>>());
+    test('isLoading should be a LiveData<bool>', () {
+      expect(viewModel.isLoading, isA<LiveData<bool>>());
     });
 
-    test('startAction should set actionInProgress to true', () {
-      expect(viewModel.actionInProgress.value, false);
+    test('beginLoading should set isLoading to true', () {
+      expect(viewModel.isLoading.value, false);
 
-      viewModel.startAction();
+      viewModel.beginLoading();
 
-      expect(viewModel.actionInProgress.value, true);
+      expect(viewModel.isLoading.value, true);
     });
 
-    test('finishAction should set actionInProgress to false', () {
-      viewModel.startAction();
-      expect(viewModel.actionInProgress.value, true);
+    test('completeLoading should set isLoading to false', () {
+      viewModel.beginLoading();
+      expect(viewModel.isLoading.value, true);
 
-      viewModel.finishAction();
+      viewModel.completeLoading();
 
-      expect(viewModel.actionInProgress.value, false);
+      expect(viewModel.isLoading.value, false);
     });
 
-    test('actionInProgress should notify listeners on change', () {
+    test('isLoading should notify listeners on change', () {
       int notifyCount = 0;
       void listener() => notifyCount++;
 
-      viewModel.actionInProgress.addListener(listener);
+      viewModel.isLoading.addListener(listener);
 
-      viewModel.startAction();
+      viewModel.beginLoading();
       expect(notifyCount, 1);
 
-      viewModel.finishAction();
+      viewModel.completeLoading();
       expect(notifyCount, 2);
-      viewModel.actionInProgress.removeListener(listener);
+      viewModel.isLoading.removeListener(listener);
     });
 
-    test('actionInProgress should be managed by dataScope', () {
-      expect(
-        viewModel.dataScope.items.contains(viewModel.actionInProgress),
-        true,
-      );
+    test('isLoading should be managed by dataScope', () {
+      expect(viewModel.scope.items.contains(viewModel.isLoading), true);
     });
   });
 
@@ -295,15 +292,15 @@ void main() {
       viewModel.register(data1);
       viewModel.register(data2);
 
-      final actionInProgress = viewModel.actionInProgress;
+      final isLoading = viewModel.isLoading;
 
       // Verify all are not disposed
       expect(counter1.isDisposed, false);
       expect(counter2.isDisposed, false);
       expect(data1.isDisposed, false);
       expect(data2.isDisposed, false);
-      expect(actionInProgress.isDisposed, false);
-      expect(viewModel.dataScope.items.isNotEmpty, true);
+      expect(isLoading.isDisposed, false);
+      expect(viewModel.scope.items.isNotEmpty, true);
 
       viewModel.dispose();
 
@@ -312,8 +309,8 @@ void main() {
       expect(counter2.isDisposed, true);
       expect(data1.isDisposed, true);
       expect(data2.isDisposed, true);
-      expect(actionInProgress.isDisposed, true);
-      expect(viewModel.dataScope.items.isEmpty, true);
+      expect(isLoading.isDisposed, true);
+      expect(viewModel.scope.items.isEmpty, true);
     });
 
     test('DataScope disposes items in reverse order (LIFO)', () {
@@ -332,10 +329,10 @@ void main() {
 
       viewModel.dispose();
 
-      // Should dispose in reverse order: data3, data2, data1, actionInProgress
+      // Should dispose in reverse order: data3, data2, data1, isLoading
       // We only check the ones we registered
       expect(disposalOrder, ['data3', 'data2', 'data1']);
-      expect(viewModel.dataScope.items.isEmpty, true);
+      expect(viewModel.scope.items.isEmpty, true);
     });
 
     test('multiple dispose calls should throw FlutterError', () {
@@ -360,18 +357,18 @@ void main() {
       counter.value = 10;
       expect(counter.value, 10);
 
-      // Start action
-      viewModel.startAction();
-      expect(viewModel.actionInProgress.value, true);
+      // Start loading
+      viewModel.beginLoading();
+      expect(viewModel.isLoading.value, true);
 
-      // Finish action
-      viewModel.finishAction();
-      expect(viewModel.actionInProgress.value, false);
+      // Finish loading
+      viewModel.completeLoading();
+      expect(viewModel.isLoading.value, false);
 
       // Dispose
       viewModel.dispose();
       expect(counter.isDisposed, true);
-      expect(viewModel.actionInProgress.isDisposed, true);
+      expect(viewModel.isLoading.isDisposed, true);
     });
 
     test('lifecycle with data management', () {

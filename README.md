@@ -31,9 +31,8 @@ Here is a simple example of how to use the package to create a counter applicati
 import 'package:mvvm_kit/mvvm_kit.dart';
 
 class CounterViewModel extends ViewModel {
-  final _counter = observable(0);
+  final _counter = mutable(0);
   LiveData<int> get counter => _counter;
-
 
   void increment() {
     _counter.value++;
@@ -90,25 +89,28 @@ You can use `GroupWatch` to listen to multiple `LiveData` objects at once. You c
 import 'package:mvvm_kit/mvvm_kit.dart';
 
 class PersonViewModel extends ViewModel {
-  final name = observable('John Doe');
-  final age = observable(30);
+  final _name = mutable('John Doe');
+  final _age = mutable(30);
+  
+  LiveData<String> get name => _name;
+  LiveData<int> get age => _age;
 
   @override
   void onActive() {
     // Perform actions when the view becomes active
   }
+  
   @override
   void onInactive() {
     // Perform actions when the view becomes inactive
   }
-
 }
 ```
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
-import 'group_viewmodel.dart';
+import 'person_viewmodel.dart';
 
 class PersonView extends ViewWidget<PersonViewModel> {
   PersonView({super.key}) : super(viewModel: PersonViewModel());
@@ -142,3 +144,16 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
   }
 }
 ```
+
+## Key Features
+
+- **LiveData**: Observable data holders that notify observers when values change,
+- **ViewModel**: Lifecycle-aware UI logic layer with automatic resource management
+- **Watch/GroupWatch**: Widgets for observing LiveData changes
+- **DataScope**: Container that automatically disposes LiveData instances when no longer needed, preventing memory leaks
+- **Transformations**: `transform()`, `filtered()`, `mirror()` for data manipulation
+- **HotswapLiveData**: Dynamically switch between data sources
+
+## Documentation
+
+Comprehensive documentation is available at [mvvm_kit Documentation](https://your-documentation-link.com).

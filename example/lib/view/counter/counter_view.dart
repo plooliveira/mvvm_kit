@@ -21,6 +21,7 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
   // In this simple example we create the ViewModel directly, but that is not a good practice for real apps especially for testability.
+  // The other example views show how to use service locators like Provider and GetIt.
   @override
   late final CounterViewModel viewModel = CounterViewModel();
 

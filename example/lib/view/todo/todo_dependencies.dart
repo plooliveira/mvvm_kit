@@ -13,7 +13,9 @@ class TodosDependencies extends AppDependencies {
   Future<void> setup() async {
     GetIt.I.registerSingletonAsync<Store>(() async => await openStore());
     await GetIt.I.isReady<Store>();
-    GetIt.I.registerFactory(() => ObjectBoxTodoRepository(GetIt.I<Store>()));
+    GetIt.I.registerFactory<TodoRepository>(
+      () => ObjectBoxTodoRepository(GetIt.I<Store>()),
+    );
     GetIt.I.registerFactory(() => TodosViewModel(GetIt.I<TodoRepository>()));
     GetIt.I.registerFactory(() => AddTodoViewModel(GetIt.I<TodoRepository>()));
   }

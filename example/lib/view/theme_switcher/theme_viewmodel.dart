@@ -13,6 +13,7 @@ class ThemeViewModel extends ViewModel {
   late final _darkTheme = mutable(AppThemes.dark());
   late final _customTheme = mutable(AppThemes.custom());
 
+  // HotswapLiveData allows switching reactive data sources without loosing existing subscribers.
   late final HotswapLiveData<ThemeData> currentTheme = _lightTheme.hotswappable(
     scope,
   );
@@ -21,7 +22,7 @@ class ThemeViewModel extends ViewModel {
   LiveData<AppThemeMode> get themeMode => _currentMode;
 
   void switchToLight() {
-    // If you change to true, the old theme will be disposed when you hotswap again, causing an error.
+    // disposeOld: false keeps theme references for reuse
     currentTheme.hotswap(_lightTheme, disposeOld: false);
     _currentMode.value = AppThemeMode.light;
   }

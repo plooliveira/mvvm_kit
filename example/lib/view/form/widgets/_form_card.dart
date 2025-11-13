@@ -1,22 +1,17 @@
 part of '../product_form_view.dart';
 
 class _FormCard extends StatelessWidget {
-  const _FormCard();
+  const _FormCard({
+    required this.nameController,
+    required this.priceController,
+    required this.viewModel,
+  });
+  final TextEditingController nameController;
+  final TextEditingController priceController;
+  final ProductFormViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context
-        .findAncestorStateOfType<_ProductFormViewState>()!
-        .viewModel;
-
-    final nameController = context
-        .findAncestorStateOfType<_ProductFormViewState>()!
-        ._nameController;
-
-    final priceController = context
-        .findAncestorStateOfType<_ProductFormViewState>()!
-        ._priceController;
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,7 +41,9 @@ class _FormCard extends StatelessWidget {
                 prefixIcon: Icon(Icons.attach_money),
                 prefixText: 'R\$ ',
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],

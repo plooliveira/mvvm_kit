@@ -13,18 +13,16 @@ class CounterRoute extends GoRoute {
 }
 
 class CounterView extends StatefulWidget {
-  const CounterView({super.key, this.viewModel});
-
-  final CounterViewModel? viewModel;
+  const CounterView({super.key});
 
   @override
   State<CounterView> createState() => _CounterViewState();
 }
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
+  // In this simple example we create the ViewModel directly, but that is not a good practice for real apps especially for testability.
   @override
-  late final CounterViewModel viewModel =
-      widget.viewModel ?? CounterViewModel();
+  late final CounterViewModel viewModel = CounterViewModel();
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +32,7 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Watch rebuilds only when counter value changes
             Watch(
               viewModel.counter,
               builder: (context, value) => Text(
@@ -47,6 +46,7 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
 
             const SizedBox(height: 40),
 
+            // Separate Watch for loading indicator
             Watch(
               viewModel.isLoading,
               builder: (context, isLoading) {
@@ -61,6 +61,7 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
 
             const SizedBox(height: 40),
 
+            // Watch disables buttons during async operations
             Watch(
               viewModel.isLoading,
               builder: (context, isLoading) {

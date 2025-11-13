@@ -2,19 +2,21 @@ part of '../todos_view.dart';
 
 class _TodoItemWidget extends StatelessWidget {
   final TodoItem todo;
+  final Function(int) toggleTodo;
+  final Function(int) deleteTodo;
 
-  const _TodoItemWidget({required this.todo});
+  const _TodoItemWidget({
+    required this.todo,
+    required this.toggleTodo,
+    required this.deleteTodo,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context
-        .findAncestorStateOfType<_TodosViewState>()!
-        .viewModel;
-
     return ListTile(
       leading: Checkbox(
         value: todo.completed,
-        onChanged: (_) => viewModel.toggleTodo(todo.id),
+        onChanged: (_) => toggleTodo(todo.id),
       ),
       title: Text(
         todo.title,
@@ -25,7 +27,7 @@ class _TodoItemWidget extends StatelessWidget {
       ),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline),
-        onPressed: () => viewModel.deleteTodo(todo.id),
+        onPressed: () => deleteTodo(todo.id),
         color: Colors.red[300],
       ),
     );

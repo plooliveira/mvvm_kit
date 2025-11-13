@@ -8,12 +8,14 @@ import '../../core/theme/theme_mode.dart';
 
 part 'widgets/_theme_preview.dart';
 
+// Here an example that uses Provider package to provide the ViewModel to the View.
 class ThemeRoute extends GoRoute {
   ThemeRoute()
     : super(
         path: '/theme',
         name: 'theme',
         builder: (context, state) =>
+            // You can isolate the ViewModel to be used only within this widget subtree
             Provider(create: (_) => ThemeViewModel(), child: const ThemeView()),
       );
 }
@@ -26,11 +28,13 @@ class ThemeView extends StatefulWidget {
 }
 
 class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
+  // Here we read the ViewModel from the Provider above
   @override
   late final ThemeViewModel viewModel = context.read<ThemeViewModel>();
 
   @override
   Widget build(BuildContext context) {
+    // Reactive Watch that rebuilds when current theme changes
     return Watch(
       viewModel.currentTheme,
       builder: (context, theme) {
@@ -62,6 +66,7 @@ class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
 
                     const SizedBox(height: 40),
 
+                    // Separate Watch to optimize rebuilds only for buttons
                     Watch(
                       viewModel.themeMode,
                       builder: (context, currentMode) {

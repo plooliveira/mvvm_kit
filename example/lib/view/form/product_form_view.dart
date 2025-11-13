@@ -17,7 +17,8 @@ class ProductFormRoute extends GoRoute {
 }
 
 class ProductFormView extends StatefulWidget {
-  const ProductFormView({super.key});
+  const ProductFormView({super.key, this.viewModel});
+  final ProductFormViewModel? viewModel;
 
   @override
   State<ProductFormView> createState() => _ProductFormViewState();
@@ -25,8 +26,11 @@ class ProductFormView extends StatefulWidget {
 
 class _ProductFormViewState
     extends ViewState<ProductFormViewModel, ProductFormView> {
+  // A simple approach is to allow passing an optional ViewModel instance via the constructor,
+  // which is useful for testing the ViewModel. But in larger apps, consider using a service locator or more advanced dependency injection.
   @override
-  late final ProductFormViewModel viewModel = ProductFormViewModel();
+  late final ProductFormViewModel viewModel =
+      widget.viewModel ?? ProductFormViewModel();
 
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
@@ -54,9 +58,18 @@ class _ProductFormViewState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _FormCard(),
+            _FormCard(
+              nameController: _nameController,
+              priceController: _priceController,
+              viewModel: viewModel,
+            ),
             const SizedBox(height: 24),
-            _JsonOutputCard(),
+            Watch(
+              viewModel.jsonOutput,
+              builder: (context, json) {
+                return _JsonOutputCard(json: json);
+              },
+            ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _clearForm,

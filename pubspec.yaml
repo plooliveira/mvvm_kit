@@ -1,8 +1,17 @@
 name: mvvm_kit
-description: "An implementation of MVVM pattern using LiveData."
-version: 0.1.0
-homepage:
-publish_to: 'none'
+description: A lightweight MVVM pattern implementation with LiveData for reactive state management in Flutter applications.
+version: 0.8.0
+homepage: https://github.com/plooliveira/mvvm_kit
+repository: https://github.com/plooliveira/mvvm_kit
+issue_tracker: https://github.com/plooliveira/mvvm_kit/issues
+documentation: https://github.com/plooliveira/mvvm_kit#readme
+
+topics:
+  - mvvm
+  - livedata
+  - architecture
+  - state-management
+  - reactive
 
 environment:
   sdk: ^3.9.0
@@ -16,7 +25,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
 

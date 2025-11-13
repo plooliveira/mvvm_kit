@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'counter_viewmodel.dart';
 
-class CounterView extends ViewWidget<CounterViewModel> {
-  CounterView({super.key}) : super(viewModel: CounterViewModel());
+class CounterView extends StatefulWidget {
+  const CounterView({super.key, this.viewModel});
+
+  final CounterViewModel? viewModel;
 
   @override
   State<CounterView> createState() => _CounterViewState();
 }
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
+  @override
+  late final CounterViewModel viewModel =
+      widget.viewModel ?? CounterViewModel();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

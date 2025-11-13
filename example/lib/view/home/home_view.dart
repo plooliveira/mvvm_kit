@@ -12,7 +12,7 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'MVVM Kit Playground',
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         centerTitle: true,
       ),

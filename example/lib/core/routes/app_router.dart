@@ -1,9 +1,10 @@
+import 'package:example_playground/view/todo/list_todos/todos_view.dart';
+import 'package:example_playground/view/todo/list_todos/todos_viewmodel.dart';
 import 'package:go_router/go_router.dart';
 import 'package:example_playground/view/home/home_view.dart';
 import 'package:example_playground/view/counter/counter_view.dart';
 import 'package:example_playground/view/theme_switcher/theme_view.dart';
-import 'package:example_playground/view/todo/todo_view.dart';
-import 'package:example_playground/view/todo/todo_viewmodel.dart';
+
 import 'package:example_playground/main.dart';
 
 final appRouter = GoRouter(
@@ -27,9 +28,8 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/todo',
       name: 'todo',
-      builder: (context, state) => TodoView(
-        viewModel: TodoViewModel(objectBoxService),
-      ),
+      builder: (context, state) =>
+          TodoView(viewModel: TodosViewModel(objectBoxService)),
     ),
   ],
 );

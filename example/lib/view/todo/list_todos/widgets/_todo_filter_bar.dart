@@ -1,9 +1,9 @@
-part of '../todo_view.dart';
+part of '../todos_view.dart';
 
 class _TodoFilterBar extends StatelessWidget {
   const _TodoFilterBar(this.currentFilter, {required this.onFilterSelected});
-  final TodoFilter currentFilter;
-  final Function(TodoFilter) onFilterSelected;
+  final TodosFilter currentFilter;
+  final Function(TodosFilter) onFilterSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -13,20 +13,20 @@ class _TodoFilterBar extends StatelessWidget {
         children: [
           _FilterChip(
             label: 'All',
-            isSelected: currentFilter == TodoFilter.all,
-            onSelected: () => onFilterSelected(TodoFilter.all),
+            isSelected: currentFilter == TodosFilter.all,
+            onSelected: () => onFilterSelected(TodosFilter.all),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Active',
-            isSelected: currentFilter == TodoFilter.active,
-            onSelected: () => onFilterSelected(TodoFilter.active),
+            isSelected: currentFilter == TodosFilter.active,
+            onSelected: () => onFilterSelected(TodosFilter.active),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Completed',
-            isSelected: currentFilter == TodoFilter.completed,
-            onSelected: () => onFilterSelected(TodoFilter.completed),
+            isSelected: currentFilter == TodosFilter.completed,
+            onSelected: () => onFilterSelected(TodosFilter.completed),
           ),
         ],
       ),

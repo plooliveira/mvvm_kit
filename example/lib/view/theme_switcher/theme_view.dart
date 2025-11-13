@@ -6,14 +6,19 @@ import '../../core/theme/theme_mode.dart';
 
 part 'widgets/_theme_preview.dart';
 
-class ThemeView extends ViewWidget<ThemeViewModel> {
-  ThemeView({super.key}) : super(viewModel: ThemeViewModel());
+class ThemeView extends StatefulWidget {
+  const ThemeView({super.key, this.viewModel});
+
+  final ThemeViewModel? viewModel;
 
   @override
   State<ThemeView> createState() => _ThemeViewState();
 }
 
 class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
+  @override
+  late final ThemeViewModel viewModel = widget.viewModel ?? ThemeViewModel();
+
   @override
   Widget build(BuildContext context) {
     return Watch(

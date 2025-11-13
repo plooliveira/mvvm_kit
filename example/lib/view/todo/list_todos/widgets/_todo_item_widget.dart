@@ -1,4 +1,4 @@
-part of '../todo_view.dart';
+part of '../todos_view.dart';
 
 class _TodoItemWidget extends StatelessWidget {
   final TodoItem todo;

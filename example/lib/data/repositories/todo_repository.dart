@@ -1,17 +1,17 @@
 import 'dart:async';
+import 'package:example_playground/data/database/objectbox_service.dart';
+import 'package:example_playground/main.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'package:objectbox/objectbox.dart';
 import '../models/todo_item.dart';
-import '../database/objectbox_service.dart';
 
 class TodoRepository {
-  final ObjectBoxService _db;
   late final Box<TodoItem> _box;
   late final MutableRepositoryData<List<TodoItem>> _todosData;
   StreamSubscription<List<TodoItem>>? _subscription;
 
-  TodoRepository(this._db) {
-    _box = _db.box<TodoItem>();
+  TodoRepository([ObjectBoxService? db]) {
+    _box = db?.box<TodoItem>() ?? objectBoxService.box<TodoItem>();
     _todosData = MutableRepositoryData(value: []);
     _listenToDatabase();
   }
@@ -26,8 +26,8 @@ class TodoRepository {
         .watch(triggerImmediately: true)
         .map((q) => q.find())
         .listen((todoList) {
-      _todosData.value = todoList;
-    });
+          _todosData.value = todoList;
+        });
   }
 
   void add(String title) {

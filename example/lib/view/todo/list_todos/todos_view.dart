@@ -1,27 +1,26 @@
 import 'package:example_playground/data/models/todo_item.dart';
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
-import 'todo_viewmodel.dart';
+import 'todos_viewmodel.dart';
+import '../add_todo/add_todo_bottom_sheet.dart';
+import '../add_todo/add_todo_viewmodel.dart';
+import '../../../main.dart';
 
 part 'widgets/_todo_item_widget.dart';
 part 'widgets/_todo_filter_bar.dart';
-part 'widgets/_todo_input_field.dart';
 
-class TodoView extends ViewWidget<TodoViewModel> {
-  const TodoView({super.key, required super.viewModel});
+class TodoView extends StatefulWidget {
+  const TodoView({super.key, this.viewModel});
+
+  final TodosViewModel? viewModel;
 
   @override
   State<TodoView> createState() => _TodoViewState();
 }
 
-class _TodoViewState extends ViewState<TodoViewModel, TodoView> {
-  final _textController = TextEditingController();
-
+class _TodoViewState extends ViewState<TodosViewModel, TodoView> {
   @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
+  late final TodosViewModel viewModel = widget.viewModel ?? TodosViewModel();
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +42,6 @@ class _TodoViewState extends ViewState<TodoViewModel, TodoView> {
       ),
       body: Column(
         children: [
-          _TodoInputField(
-            controller: _textController,
-            onSubmit: (text) {
-              viewModel.addTodo(text);
-              _textController.clear();
-            },
-          ),
           Watch(
             viewModel.currentFilter,
             builder: (context, currentFilter) {
@@ -69,8 +61,8 @@ class _TodoViewState extends ViewState<TodoViewModel, TodoView> {
                       viewModel.currentFilter,
                       builder: (context, filter) {
                         return Text(
-                          filter == TodoFilter.all
-                              ? 'No todos yet!\nAdd one above 👆'
+                          filter == TodosFilter.all
+                              ? 'No todos yet!\nTap + to add one'
                               : 'No ${filter.name} todos',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -92,6 +84,18 @@ class _TodoViewState extends ViewState<TodoViewModel, TodoView> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (_) => AddTodoBottomSheet(
+              viewModel: AddTodoViewModel(objectBoxService),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

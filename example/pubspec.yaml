@@ -13,11 +13,14 @@ dependencies:
   objectbox: ^5.0.2
   mvvm_kit:
     path: ../package
+  objectbox_flutter_libs: ^5.0.2 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  build_runner: ^2.10.2 
+  objectbox_generator: ^5.0.2 
 
 flutter:
   uses-material-design: true

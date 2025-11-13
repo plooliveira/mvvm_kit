@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'core/routes/app_router.dart';
+import 'data/database/objectbox_service.dart';
 
-void main() {
+late final ObjectBoxService objectBoxService;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  objectBoxService = await ObjectBoxService.getInstance();
+
   runApp(const MainApp());
 }
 

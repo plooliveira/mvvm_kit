@@ -1,6 +1,6 @@
 import 'package:example_playground/data/models/todo_item.dart';
 import 'package:example_playground/data/repositories/todo_repository.dart';
-import 'package:example_playground/objectbox.g.dart';
+import 'package:example_playground/data/database/objectbox.g.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';

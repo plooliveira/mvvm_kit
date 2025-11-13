@@ -1,11 +1,10 @@
-import 'package:example_playground/core/routes/app_dependencies.dart';
+import 'package:example_playground/view/todo/todo_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'core/routes/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  setupDependencies();
+  await TodosDependencies().setup();
 
   runApp(const MainApp());
 }

@@ -35,11 +35,6 @@ class TodosViewModel extends ViewModel {
     (todos) => todos.value.where((t) => t.completed).length,
   );
 
-  void addTodo(String title) {
-    if (title.trim().isEmpty) return;
-    _repository.add(title.trim());
-  }
-
   void toggleTodo(int id) => _repository.toggle(id);
 
   void deleteTodo(int id) => _repository.delete(id);

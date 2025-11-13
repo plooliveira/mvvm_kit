@@ -27,7 +27,7 @@ class HomeView extends StatelessWidget {
                 title: '1. Counter',
                 description: 'Basic LiveData + Loading States',
                 icon: Icons.add_circle_outline,
-                onTap: () => context.go('/counter'),
+                onTap: () => context.push('/counter'),
               ),
 
               const SizedBox(height: 16),
@@ -36,7 +36,7 @@ class HomeView extends StatelessWidget {
                 title: '2. Theme Switcher',
                 description: 'HotswapLiveData demonstration',
                 icon: Icons.palette_outlined,
-                onTap: () => context.go('/theme'),
+                onTap: () => context.push('/theme'),
                 enabled: true,
               ),
 
@@ -46,7 +46,7 @@ class HomeView extends StatelessWidget {
                 title: '3. Todo List',
                 description: 'ObjectBox + Repository pattern',
                 icon: Icons.checklist_outlined,
-                onTap: () => context.go('/todo'),
+                onTap: () => context.push('/todo'),
                 enabled: true,
               ),
             ],

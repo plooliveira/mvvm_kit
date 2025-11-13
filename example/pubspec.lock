@@ -363,7 +363,7 @@ packages:
   mvvm_kit:
     dependency: "direct main"
     description:
-      path: "../package"
+      path: ".."
       relative: true
     source: path
     version: "0.1.0"

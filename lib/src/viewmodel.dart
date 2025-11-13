@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'package:mvvm_kit/mvvm_kit.dart';
+import '../mvvm_kit.dart';
 
 /// Base class for ViewModels in the MVVM pattern.
 ///
@@ -70,9 +70,18 @@ abstract class ViewModel extends _LifecycleViewModel {
   ///
   /// Sets [isLoading] to `false`.
   void completeLoading() => _isLoading.value = false;
+
+  Future<T> executeAsync<T>(Future<T> Function() action) async {
+    beginLoading();
+    try {
+      return await action();
+    } finally {
+      completeLoading();
+    }
+  }
 }
 
-abstract class _LifecycleViewModel extends ChangeNotifier {
+abstract class _LifecycleViewModel {
   /// Scope for managing the lifecycle of [LiveData] instances.
   ///
   /// All LiveData created with [mutable] or [register] are automatically
@@ -158,10 +167,8 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
   /// ```
   void onInactive() {}
 
-  @override
   void dispose() {
     scope.dispose();
-    super.dispose();
   }
 
   /// Waits until the ViewModel becomes active.

@@ -334,15 +334,6 @@ void main() {
       expect(disposalOrder, ['data3', 'data2', 'data1']);
       expect(viewModel.scope.items.isEmpty, true);
     });
-
-    test('multiple dispose calls should throw FlutterError', () {
-      final viewModel = TestViewModel();
-
-      viewModel.dispose();
-
-      // ChangeNotifier throws when disposed twice
-      expect(() => viewModel.dispose(), throwsFlutterError);
-    });
   });
 
   group('ViewModel - Integration Tests', () {

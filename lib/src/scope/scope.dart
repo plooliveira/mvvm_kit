@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
-import 'package:mvvm_kit/mvvm_kit.dart';
+import '../../mvvm_kit.dart';
 
 part '_mediator.dart';
 part '_merged.dart';
@@ -22,7 +22,7 @@ part '_dispose.dart';
 /// final scope = DataScope();
 /// final data1 = scope.add(MutableLiveData(0));
 /// final data2 = scope.mutable('hello');
-/// 
+///
 /// // Later, dispose all at once
 /// scope.dispose(); // data1 and data2 are automatically disposed
 /// ```
@@ -33,7 +33,7 @@ part '_dispose.dart';
 class DataScope {
   final LinkedHashSet<ChangeNotifier> _items = LinkedHashSet();
   final LinkedHashSet<DataScope> _children = LinkedHashSet();
-  
+
   /// The parent scope, if this is a child scope.
   final DataScope? parent;
 

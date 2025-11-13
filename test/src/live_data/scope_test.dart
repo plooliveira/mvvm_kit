@@ -349,10 +349,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final mediated = scope.join<int>(
-        [source1, source2],
-        () => source1.value + source2.value,
-      );
+      final mediated = scope.join<int>([
+        source1,
+        source2,
+      ], () => source1.value + source2.value);
 
       expect(mediated.value, 30);
       expect(scope.items, contains(mediated));
@@ -362,10 +362,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final mediated = scope.join<int>(
-        [source1, source2],
-        () => source1.value + source2.value,
-      );
+      final mediated = scope.join<int>([
+        source1,
+        source2,
+      ], () => source1.value + source2.value);
 
       expect(mediated.value, 30);
 
@@ -380,10 +380,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final mediated = scope.join<int>(
-        [source1, source2],
-        () => source1.value + source2.value,
-      );
+      final mediated = scope.join<int>([
+        source1,
+        source2,
+      ], () => source1.value + source2.value);
 
       int? receivedValue;
       int callCount = 0;
@@ -404,10 +404,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final mediated = scope.join<int>(
-        [source1, source2],
-        () => source1.value + source2.value,
-      );
+      final mediated = scope.join<int>([
+        source1,
+        source2,
+      ], () => source1.value + source2.value);
 
       expect(mediated.isDisposed, isFalse);
 
@@ -433,10 +433,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final merged = scope.merge<String>(
-        [source1, source2],
-        () => '${source1.value}:${source2.value}',
-      );
+      final merged = scope.merge<String>([
+        source1,
+        source2,
+      ], () => '${source1.value}:${source2.value}');
 
       expect(merged.value, '10:20');
       expect(scope.items, contains(merged));
@@ -446,10 +446,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final merged = scope.merge<String>(
-        [source1, source2],
-        () => '${source1.value}:${source2.value}',
-      );
+      final merged = scope.merge<String>([
+        source1,
+        source2,
+      ], () => '${source1.value}:${source2.value}');
 
       expect(merged.value, '10:20');
 
@@ -464,10 +464,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final merged = scope.merge<String>(
-        [source1, source2],
-        () => '${source1.value}:${source2.value}',
-      );
+      final merged = scope.merge<String>([
+        source1,
+        source2,
+      ], () => '${source1.value}:${source2.value}');
 
       String? receivedValue;
       int callCount = 0;
@@ -488,10 +488,10 @@ void main() {
       final source1 = MutableLiveData<int>(10);
       final source2 = MutableLiveData<int>(20);
 
-      final merged = scope.merge<String>(
-        [source1, source2],
-        () => '${source1.value}:${source2.value}',
-      );
+      final merged = scope.merge<String>([
+        source1,
+        source2,
+      ], () => '${source1.value}:${source2.value}');
 
       expect(merged.isDisposed, isFalse);
 
@@ -504,10 +504,10 @@ void main() {
       final liveData = MutableLiveData<int>(10);
       final notifier = MockChangeNotifier();
 
-      final merged = scope.merge<String>(
-        [liveData, notifier],
-        () => 'value:${liveData.value}',
-      );
+      final merged = scope.merge<String>([
+        liveData,
+        notifier,
+      ], () => 'value:${liveData.value}');
 
       expect(merged.value, 'value:10');
 
@@ -516,7 +516,10 @@ void main() {
 
       // Notify the MockChangeNotifier
       notifier.notifyListeners();
-      expect(merged.value, 'value:20'); // Still same because transform didn't change
+      expect(
+        merged.value,
+        'value:20',
+      ); // Still same because transform didn't change
     });
   });
 }

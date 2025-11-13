@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mvvm_kit/src/live_data/live_data.dart';
+import '../live_data/live_data.dart';
 
 /// Widget that rebuilds when a [LiveData] value changes.
 ///

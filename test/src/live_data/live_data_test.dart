@@ -275,13 +275,20 @@ void main() {
       expect(callCount, 1);
     });
 
-    test('should not notify for maps with different order but same content', () {
-      final liveData = MutableLiveData({'a': 1, 'b': 2, 'c': 3});
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = {'c': 3, 'a': 1, 'b': 2}; // Different order, same content
-      expect(callCount, 1); // DeepEquality should treat as equal
-    });
+    test(
+      'should not notify for maps with different order but same content',
+      () {
+        final liveData = MutableLiveData({'a': 1, 'b': 2, 'c': 3});
+        int callCount = 0;
+        liveData.subscribe((_) => callCount++);
+        liveData.value = {
+          'c': 3,
+          'a': 1,
+          'b': 2,
+        }; // Different order, same content
+        expect(callCount, 1); // DeepEquality should treat as equal
+      },
+    );
   });
 
   group('LiveData Extensions', () {
@@ -861,26 +868,29 @@ void main() {
         },
       );
 
-      test('should handle hotswap called during initial subscribe callback', () {
-        final base1 = MutableLiveData<int>(10);
-        final base2 = MutableLiveData<int>(20);
-        final hotswap = base1.hotswappable();
+      test(
+        'should handle hotswap called during initial subscribe callback',
+        () {
+          final base1 = MutableLiveData<int>(10);
+          final base2 = MutableLiveData<int>(20);
+          final hotswap = base1.hotswappable();
 
-        bool hotswapped = false;
-        hotswap.subscribe((value) {
-          if (value == 10 && !hotswapped) {
-            hotswapped = true;
-            // Hotswap during initial subscribe callback
-            hotswap.hotswap(base2);
-          }
-        });
+          bool hotswapped = false;
+          hotswap.subscribe((value) {
+            if (value == 10 && !hotswapped) {
+              hotswapped = true;
+              // Hotswap during initial subscribe callback
+              hotswap.hotswap(base2);
+            }
+          });
 
-        // Should not throw error and value should be from new base
-        expect(hotswap.value, 20);
-        expect(hotswapped, isTrue);
+          // Should not throw error and value should be from new base
+          expect(hotswap.value, 20);
+          expect(hotswapped, isTrue);
 
-        disposeAll([hotswap, base2]);
-      });
+          disposeAll([hotswap, base2]);
+        },
+      );
     });
   });
 }

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mvvm_kit/mvvm_kit.dart';
+import '../../mvvm_kit.dart';
 
 part '_mirror.dart';
 part '_filter.dart';
@@ -175,7 +175,7 @@ abstract class LiveData<T> extends ChangeNotifier {
   /// Example:
   /// ```dart
   /// void onValueChanged(int value) => print(value);
-  /// 
+  ///
   /// liveData.subscribe(onValueChanged);
   /// // later...
   /// liveData.unsubscribe(onValueChanged);

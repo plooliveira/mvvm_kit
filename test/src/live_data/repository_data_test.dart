@@ -27,7 +27,6 @@ void main() {
       source.value = 100;
       expect(live.value, 100);
 
-      live.dispose();
       source.dispose();
     });
 
@@ -41,7 +40,6 @@ void main() {
       source.value = 15;
       expect(transformed.value, 30);
 
-      transformed.dispose();
       source.dispose();
     });
   });
@@ -69,10 +67,7 @@ void main() {
 
     test('should prioritize source parameter over value parameter', () {
       final source = MutableLiveData(100);
-      final repo = MutableRepositoryData(
-        value: 42,
-        source: source,
-      );
+      final repo = MutableRepositoryData(value: 42, source: source);
 
       expect(repo.value, 100);
       expect(repo.source, same(source));

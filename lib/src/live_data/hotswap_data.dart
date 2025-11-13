@@ -1,4 +1,4 @@
-import 'package:mvvm_kit/mvvm_kit.dart';
+import '../../mvvm_kit.dart';
 
 /// A [LiveData] that can dynamically switch between different source LiveData.
 ///
@@ -11,10 +11,10 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 /// ```dart
 /// final repo1Data = MutableLiveData('Source 1');
 /// final repo2Data = MutableLiveData('Source 2');
-/// 
+///
 /// final hotswap = HotswapLiveData(repo1Data, scope);
 /// print(hotswap.value); // 'Source 1'
-/// 
+///
 /// hotswap.hotswap(repo2Data);
 /// print(hotswap.value); // 'Source 2'
 /// ```
@@ -48,7 +48,7 @@ class HotswapLiveData<T> extends LiveData<T> {
   /// final data1 = MutableLiveData(1);
   /// final data2 = MutableLiveData(2);
   /// final hotswap = HotswapLiveData(data1, null);
-  /// 
+  ///
   /// hotswap.hotswap(data2); // Switches to data2, disposes data1
   /// hotswap.hotswap(data2); // Does nothing (already observing data2)
   /// ```

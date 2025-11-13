@@ -1,4 +1,4 @@
-import 'package:mvvm_kit/mvvm_kit.dart';
+import '../../mvvm_kit.dart';
 
 /// Base interface for repository data holders.
 ///
@@ -23,6 +23,7 @@ abstract class RepositoryData<T> {
     S Function(LiveData<T> data) transform,
     DataScope? scope,
   );
+  void dispose();
 }
 
 /// Repository data backed by an immutable LiveData source.
@@ -109,4 +110,9 @@ abstract class _SourceRepositoryData<T, D extends LiveData<T>>
     S Function(LiveData<T>) transform,
     DataScope? scope,
   ) => source.transform(transform);
+
+  @override
+  void dispose() {
+    source.dispose();
+  }
 }

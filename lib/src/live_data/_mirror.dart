@@ -1,4 +1,4 @@
-part of './live_data.dart';
+part of 'live_data.dart';
 
 T _liveDataTransform<T>(LiveData<T> data) {
   return data.value;

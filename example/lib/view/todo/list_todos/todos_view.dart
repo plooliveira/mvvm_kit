@@ -90,9 +90,7 @@ class _TodoViewState extends ViewState<TodosViewModel, TodoView> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (_) => AddTodoBottomSheet(
-              viewModel: AddTodoViewModel(objectBoxService),
-            ),
+            builder: (_) => AddTodoBottomSheet(),
           );
         },
         child: const Icon(Icons.add),

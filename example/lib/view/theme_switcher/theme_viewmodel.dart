@@ -3,6 +3,11 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 import '../../core/theme/app_themes.dart';
 import '../../core/theme/theme_mode.dart';
 
+// ViewModel for managing theme switching logic. In this example, it allows switching
+// between light, dark, and custom themes using hotswappable LiveData.
+// Of course that is not necessary for themes, but it serves as a good example of how to use
+// HotswapLiveData in a ViewModel.
+
 class ThemeViewModel extends ViewModel {
   late final _lightTheme = mutable(AppThemes.light());
   late final _darkTheme = mutable(AppThemes.dark());
@@ -16,6 +21,7 @@ class ThemeViewModel extends ViewModel {
   LiveData<AppThemeMode> get themeMode => _currentMode;
 
   void switchToLight() {
+    // If you change to true, the old theme will be disposed when you hotswap again, causing an error.
     currentTheme.hotswap(_lightTheme, disposeOld: false);
     _currentMode.value = AppThemeMode.light;
   }

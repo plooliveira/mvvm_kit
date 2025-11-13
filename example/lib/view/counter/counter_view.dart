@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'counter_viewmodel.dart';
+
+class CounterRoute extends GoRoute {
+  CounterRoute()
+    : super(
+        path: '/counter',
+        name: 'counter',
+        builder: (context, state) => CounterView(),
+      );
+}
 
 class CounterView extends StatefulWidget {
   const CounterView({super.key, this.viewModel});

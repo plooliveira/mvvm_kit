@@ -14,6 +14,8 @@ dependencies:
   mvvm_kit:
     path: ../package
   objectbox_flutter_libs: ^5.0.2 
+  provider: ^6.1.5+1
+  get_it: ^9.0.5
 
 dev_dependencies:
   flutter_test:

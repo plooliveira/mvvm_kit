@@ -1,4 +1,3 @@
-import 'package:example_playground/data/database/objectbox_service.dart';
 import 'package:example_playground/data/repositories/todo_repository.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 
@@ -7,9 +6,7 @@ enum TodosFilter { all, active, completed }
 class TodosViewModel extends ViewModel {
   late final TodoRepository _repository;
 
-  TodosViewModel([ObjectBoxService? db]) {
-    _repository = TodoRepository(db);
-  }
+  TodosViewModel(TodoRepository repo) : _repository = repo;
 
   late final allTodos = _repository.todos.live;
 

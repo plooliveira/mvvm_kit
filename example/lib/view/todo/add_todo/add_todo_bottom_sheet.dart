@@ -1,5 +1,6 @@
 import 'package:example_playground/core/widgets/simple_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'add_todo_viewmodel.dart';
@@ -19,8 +20,7 @@ class _AddTodoBottomSheetState
   final _focusNode = FocusNode();
 
   @override
-  late final AddTodoViewModel viewModel =
-      widget.viewModel ?? AddTodoViewModel();
+  final AddTodoViewModel viewModel = GetIt.I<AddTodoViewModel>();
 
   @override
   void initState() {

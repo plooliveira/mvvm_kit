@@ -3,6 +3,15 @@ import 'package:go_router/go_router.dart';
 
 part './widgets/_exemplo_card.dart';
 
+class HomeRoute extends GoRoute {
+  HomeRoute()
+    : super(
+        path: '/',
+        name: 'home',
+        builder: (context, state) => const HomeView(),
+      );
+}
+
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 

@@ -1,15 +1,25 @@
 import 'package:example_playground/core/widgets/simple_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
+import 'package:provider/provider.dart';
 import 'theme_viewmodel.dart';
 import '../../core/theme/theme_mode.dart';
 
 part 'widgets/_theme_preview.dart';
 
-class ThemeView extends StatefulWidget {
-  const ThemeView({super.key, this.viewModel});
+class ThemeRoute extends GoRoute {
+  ThemeRoute()
+    : super(
+        path: '/theme',
+        name: 'theme',
+        builder: (context, state) =>
+            Provider(create: (_) => ThemeViewModel(), child: const ThemeView()),
+      );
+}
 
-  final ThemeViewModel? viewModel;
+class ThemeView extends StatefulWidget {
+  const ThemeView({super.key});
 
   @override
   State<ThemeView> createState() => _ThemeViewState();
@@ -17,7 +27,7 @@ class ThemeView extends StatefulWidget {
 
 class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
   @override
-  late final ThemeViewModel viewModel = widget.viewModel ?? ThemeViewModel();
+  late final ThemeViewModel viewModel = context.read<ThemeViewModel>();
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ class _TodoItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context
-        .findAncestorStateOfType<_TodoViewState>()!
+        .findAncestorStateOfType<_TodosViewState>()!
         .viewModel;
 
     return ListTile(

@@ -81,7 +81,7 @@ abstract class ViewModel extends _LifecycleViewModel {
   }
 }
 
-abstract class _LifecycleViewModel extends ChangeNotifier {
+abstract class _LifecycleViewModel {
   /// Scope for managing the lifecycle of [LiveData] instances.
   ///
   /// All LiveData created with [mutable] or [register] are automatically
@@ -167,10 +167,8 @@ abstract class _LifecycleViewModel extends ChangeNotifier {
   /// ```
   void onInactive() {}
 
-  @override
   void dispose() {
     scope.dispose();
-    super.dispose();
   }
 
   /// Waits until the ViewModel becomes active.

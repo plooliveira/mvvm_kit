@@ -1,26 +1,35 @@
 import 'package:example_playground/data/models/todo_item.dart';
+import 'package:example_playground/data/repositories/todo_repository.dart';
+import 'package:example_playground/objectbox.g.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'todos_viewmodel.dart';
 import '../add_todo/add_todo_bottom_sheet.dart';
-import '../add_todo/add_todo_viewmodel.dart';
-import '../../../main.dart';
 
 part 'widgets/_todo_item_widget.dart';
 part 'widgets/_todo_filter_bar.dart';
 
-class TodoView extends StatefulWidget {
-  const TodoView({super.key, this.viewModel});
-
-  final TodosViewModel? viewModel;
-
-  @override
-  State<TodoView> createState() => _TodoViewState();
+class TodosRoute extends GoRoute {
+  TodosRoute()
+    : super(
+        path: '/todo',
+        name: 'todo',
+        builder: (context, state) => TodosView(),
+      );
 }
 
-class _TodoViewState extends ViewState<TodosViewModel, TodoView> {
+class TodosView extends StatefulWidget {
+  const TodosView({super.key});
+
   @override
-  late final TodosViewModel viewModel = widget.viewModel ?? TodosViewModel();
+  State<TodosView> createState() => _TodosViewState();
+}
+
+class _TodosViewState extends ViewState<TodosViewModel, TodosView> {
+  @override
+  final TodosViewModel viewModel = GetIt.I<TodosViewModel>();
 
   @override
   Widget build(BuildContext context) {

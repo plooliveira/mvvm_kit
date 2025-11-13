@@ -16,7 +16,7 @@ To use this package, add `mvvm_kit` as a dependency in your `pubspec.yaml` file.
 
 ```yaml
 dependencies:
-  mvvm_kit: ^0.1.0
+  mvvm_kit: ^0.8.0
 ```
 
 ## Usage
@@ -45,6 +45,8 @@ class CounterViewModel extends ViewModel {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
+import 'package:get_it/get_it.dart';
+
 import 'counter_viewmodel.dart';
 
 class CounterView extends StatefulWidget {
@@ -56,7 +58,7 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
    @override
-  final CounterViewModel viewModel = GetIt.I<CounterViewModel>();
+  final CounterViewModel viewModel = GetIt.I<CounterViewModel>(); // You can use GetIt or any other service locator
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +115,8 @@ class PersonViewModel extends ViewModel {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
+import 'package:get_it/get_it.dart';
+
 import 'person_viewmodel.dart';
 
 class PersonView extends StatefulWidget {
@@ -124,8 +128,8 @@ class PersonView extends StatefulWidget {
 
 class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
    @override
-  final PersonViewModel viewModel = GetIt.I<PersonViewModel>();
-  
+  final PersonViewModel viewModel = GetIt.I<PersonViewModel>(); // You can use GetIt or any other service locator
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

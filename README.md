@@ -47,14 +47,17 @@ import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'counter_viewmodel.dart';
 
-class CounterView extends ViewWidget<CounterViewModel> {
-  CounterView({super.key}) : super(viewModel: CounterViewModel());
+class CounterView extends StatefulWidget {
+  const CounterView({super.key});
 
   @override
   State<CounterView> createState() => _CounterViewState();
 }
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
+   @override
+  final CounterViewModel viewModel = GetIt.I<CounterViewModel>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,14 +115,17 @@ import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 import 'person_viewmodel.dart';
 
-class PersonView extends ViewWidget<PersonViewModel> {
-  PersonView({super.key}) : super(viewModel: PersonViewModel());
+class PersonView extends StatefulWidget {
+  const PersonView({super.key});
 
   @override
   State<PersonView> createState() => _PersonViewState();
 }
 
 class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
+   @override
+  final PersonViewModel viewModel = GetIt.I<PersonViewModel>();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

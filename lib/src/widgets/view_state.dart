@@ -53,7 +53,7 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
     }
   }
 
-  /// Synchronizes ViewModel.isActive with app lifecycle state. If you needs to override, be sure to call super.didChangeAppLifecycleState.
+  /// Synchronizes ViewModel.isActive with app lifecycle state. If you need to override, be sure to call super.didChangeAppLifecycleState.
   ///
   /// Sets to `true` when resumed, `false` when inactive/hidden/paused.
   @override

@@ -33,7 +33,7 @@ void main() {
     test('should delegate transform method to source', () {
       final source = MutableLiveData(10);
       final repo = LiveRepositoryData(source);
-      final transformed = repo.transform((data) => data.value * 2, null);
+      final transformed = repo.transform((data) => data.value * 2);
 
       expect(transformed.value, 20);
 
@@ -105,7 +105,7 @@ void main() {
 
       expect(repo.value, 42);
       expect(repo.live.value, 42);
-      expect(repo.transform((data) => data.value * 2, null).value, 84);
+      expect(repo.transform((data) => data.value * 2).value, 84);
 
       source.dispose();
     });
@@ -115,7 +115,7 @@ void main() {
 
       expect(repo.value, 42);
       expect(repo.live.value, 42);
-      expect(repo.transform((data) => data.value * 2, null).value, 84);
+      expect(repo.transform((data) => data.value * 2).value, 84);
 
       (repo as MutableRepositoryData).source.dispose();
     });

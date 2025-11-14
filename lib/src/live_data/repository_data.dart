@@ -19,10 +19,7 @@ abstract class RepositoryData<T> {
   /// Transforms the data into a different type.
   ///
   /// Returns a LiveData that applies [transform] to compute its value.
-  LiveData<S> transform<S>(
-    S Function(LiveData<T> data) transform,
-    DataScope? scope,
-  );
+  LiveData<S> transform<S>(S Function(LiveData<T> data) transform);
   void dispose();
 }
 
@@ -106,10 +103,8 @@ abstract class _SourceRepositoryData<T, D extends LiveData<T>>
   LiveData<T> get live => source.mirror();
 
   @override
-  LiveData<S> transform<S>(
-    S Function(LiveData<T>) transform,
-    DataScope? scope,
-  ) => source.transform(transform);
+  LiveData<S> transform<S>(S Function(LiveData<T>) transform) =>
+      source.transform(transform);
 
   @override
   void dispose() {

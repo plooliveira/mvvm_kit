@@ -41,7 +41,7 @@ extension LiveDataExtensions<T> on LiveData<T> {
   /// ```dart
   /// final data1 = MutableLiveData(1);
   /// final hotswap = data1.hotswappable();
-  /// 
+  ///
   /// final data2 = MutableLiveData(2);
   /// hotswap.hotswap(data2); // Now observes data2
   /// ```

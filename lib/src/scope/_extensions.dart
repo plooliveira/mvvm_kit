@@ -63,7 +63,7 @@ extension DataScopeExtensions on DataScope {
   /// ```dart
   /// final firstName = MutableLiveData('John');
   /// final lastName = MutableLiveData('Doe');
-  /// 
+  ///
   /// final fullName = scope.join([firstName, lastName], () {
   ///   return '${firstName.value} ${lastName.value}';
   /// });
@@ -80,7 +80,7 @@ extension DataScopeExtensions on DataScope {
   /// ```dart
   /// final notifier1 = ValueNotifier(1);
   /// final notifier2 = ValueNotifier(2);
-  /// 
+  ///
   /// final sum = scope.merge([notifier1, notifier2], () {
   ///   return notifier1.value + notifier2.value;
   /// });

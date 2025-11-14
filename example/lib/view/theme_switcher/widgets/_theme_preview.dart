@@ -53,10 +53,7 @@ class _ColorBox extends StatelessWidget {
   final Color color;
   final String label;
 
-  const _ColorBox({
-    required this.color,
-    required this.label,
-  });
+  const _ColorBox({required this.color, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +68,7 @@ class _ColorBox extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

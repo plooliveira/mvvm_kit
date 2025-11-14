@@ -6,14 +6,14 @@ import '../mvvm_kit.dart';
 /// Base class for ViewModels in the MVVM pattern.
 ///
 /// [ViewModel] manages the business logic for the UI layer.
-/// It extends [ChangeNotifier] and provides lifecycle management, automatic
-/// disposal of [LiveData] through [DataScope], and built-in action tracking.
+/// It provides lifecycle management, automatic
+/// disposal of [LiveData] and other [ChangeNotifier] objects through [DataScope], and built-in loading state management.
 ///
 /// Key features:
-/// * Automatic lifecycle management with [onActive] and [onInactive]
-/// * Built-in [isLoading] for tracking long-running operations
-/// * Automatic disposal of all registered [LiveData] instances
 /// * Methods [mutable] and [register] for creating observable data
+/// * Automatic disposal of all registered [LiveData] instances
+/// * Built-in [isLoading] for tracking long-running operations
+/// * Reacts to the UI lifecycle with [onActive] and [onInactive] callbacks, which are invoked when the associated view becomes visible or is hidden.
 ///
 /// Example:
 /// ```dart
@@ -33,7 +33,7 @@ import '../mvvm_kit.dart';
 /// ```
 ///
 /// See also:
-/// * [ViewWidget] and [ViewState], for connecting ViewModels to widgets
+/// * [ViewState], for connecting ViewModels to widgets
 /// * [LiveData] and [MutableLiveData], for observable data
 /// * [DataScope], for managing LiveData lifecycle
 abstract class ViewModel extends _LifecycleViewModel {
@@ -43,20 +43,9 @@ abstract class ViewModel extends _LifecycleViewModel {
 
   /// Observable flag indicating if a long-running action is in progress.
   ///
-  /// Use [beginLoading] and [completeLoading] to control this flag.
-  /// Useful for showing loading indicators in the UI.
-  ///
-  /// Example:
-  /// ```dart
-  /// Future<void> loadData() async {
-  ///   startAction();
-  ///   try {
-  ///     await repository.fetchData();
-  ///   } finally {
-  ///     finishAction();
-  ///   }
-  /// }
-  /// ```
+  /// You can Use [beginLoading] and [completeLoading] to control this flag manually,
+  /// or use [executeAsync] to automatically manage it around asynchronous operations with error catching.
+
   LiveData<bool> get isLoading => _isLoading;
   late final MutableLiveData<bool> _isLoading;
 
@@ -71,10 +60,26 @@ abstract class ViewModel extends _LifecycleViewModel {
   /// Sets [isLoading] to `false`.
   void completeLoading() => _isLoading.value = false;
 
+  /// Executes an asynchronous action while managing the loading state.
+  ///
+  /// Sets [isLoading] to `true` before starting the action,
+  /// and sets it back to `false` when the action completes, whether
+  /// it completes successfully or with an error.
+  ///
+  /// Example:
+  /// ```dart
+  /// Future<void> fetchData() async {
+  ///   await executeAsync(() async {
+  ///     await repository.getData();
+  ///   });
+  /// }
+  /// ```
   Future<T> executeAsync<T>(Future<T> Function() action) async {
     beginLoading();
     try {
       return await action();
+    } catch (e) {
+      rethrow;
     } finally {
       completeLoading();
     }

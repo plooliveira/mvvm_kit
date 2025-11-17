@@ -1,3 +1,7 @@
+## 0.8.4
+### Doc
+- Small improvement to API documentation layout
+
 ## 0.8.3
 ### Doc
 - Updated API documentation to include mvvm_kit logo

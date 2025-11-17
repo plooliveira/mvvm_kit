@@ -1,4 +1,7 @@
-![mvvm_kit logo](mvvm_kit_logo.png)
+  <p align="center">
+    <img src="mvvm_kit_logo.png" alt="mvvm_kit logo" width="500">
+  </p>
+
 
 
 ## Overview

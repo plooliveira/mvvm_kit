@@ -1,6 +1,6 @@
 name: mvvm_kit
 description: A lightweight MVVM pattern implementation with LiveData for reactive state management in Flutter applications.
-version: 0.8.2
+version: 0.8.3
 homepage: https://github.com/plooliveira/mvvm_kit
 repository: https://github.com/plooliveira/mvvm_kit
 issue_tracker: https://github.com/plooliveira/mvvm_kit/issues

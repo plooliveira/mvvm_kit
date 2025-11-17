@@ -1,3 +1,7 @@
+## 0.8.3
+### Doc
+- Updated API documentation to include mvvm_kit logo
+
 ## 0.8.2
 ### Minor
 - Updated README to improve documentation and add logo

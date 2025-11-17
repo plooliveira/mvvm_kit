@@ -1,6 +1,5 @@
 import 'package:mvvm_kit/mvvm_kit.dart';
 
-// Simple counter demonstrating MutableLiveData and executeAsync
 class CounterViewModel extends ViewModel {
   // MutableLiveData created with mutable() is auto-disposed by the ViewModel's scope
   late final _counter = mutable(0);

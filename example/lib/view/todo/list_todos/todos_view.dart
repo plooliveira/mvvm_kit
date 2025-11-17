@@ -26,11 +26,14 @@ class TodosView extends StatefulWidget {
 }
 
 class _TodosViewState extends ViewState<TodosViewModel, TodosView> {
-  // A good option for larger apps is use a Service Locator like GetIt. Is easy to setup but still can handle complex dependency graphs.
-  // Interesting to note that here the ViewModel is not a singleton, and you dont need to share it with other parts of the app in order to react to changes
-  // in the same set of data, because the data in the repository and most importantly the data source(in this case ObjectBox) is shared and reactive.
+  // Override createViewModel() to plug a
+  // different injection strategy. In this case, GetIt.
+  // If the type is registered as a factory, each ViewState will get its own instance
+  // (i.e. it is not a singleton). That is fine because the underlying data
+  // source (ObjectBox) is shared and reactive — multiple ViewModel instances will
+  // still observe the same data changes.
   @override
-  final TodosViewModel viewModel = GetIt.I<TodosViewModel>();
+  TodosViewModel createViewModel() => GetIt.I<TodosViewModel>();
 
   @override
   Widget build(BuildContext context) {

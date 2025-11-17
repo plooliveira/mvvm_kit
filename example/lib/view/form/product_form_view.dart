@@ -26,12 +26,6 @@ class ProductFormView extends StatefulWidget {
 
 class _ProductFormViewState
     extends ViewState<ProductFormViewModel, ProductFormView> {
-  // A simple approach is to allow passing an optional ViewModel instance via the constructor,
-  // which is useful for testing the ViewModel. But in larger apps, consider using a service locator or more advanced dependency injection.
-  @override
-  late final ProductFormViewModel viewModel =
-      widget.viewModel ?? ProductFormViewModel();
-
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
 

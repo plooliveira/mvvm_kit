@@ -1,6 +1,5 @@
-# MVVM Kit
+![mvvm_kit logo](mvvm_kit_logo.png)
 
-An implementation of the MVVM pattern using LiveData for Flutter.
 
 ## Overview
 
@@ -166,4 +165,4 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 
 ## Documentation
 
-Comprehensive documentation is available at [mvvm_kit Documentation](https://your-documentation-link.com).
+For more detailed documentation, please visit the [MVVM Kit Library reference](https://pub.dev/documentation/mvvm_kit/latest/mvvm_kit/).

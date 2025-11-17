@@ -1,5 +1,5 @@
 ![mvvm_kit logo](mvvm_kit_logo.png)
-An implementation of the MVVM pattern using LiveData for Flutter.
+
 
 ## Overview
 

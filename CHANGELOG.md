@@ -1,3 +1,7 @@
+## 0.8.2
+### Minor
+- Updated README to improve documentation and add logo
+
 ## 0.8.1
 - Fixed typos in ViewModel documentation comments
 - Removed deprecated parameters from RepositoryData transform method

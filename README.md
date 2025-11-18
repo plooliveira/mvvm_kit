@@ -97,7 +97,7 @@ import 'counter_viewmodel.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 
 void setupLocator() {
-  simpleLocator.registerFactory(() => CounterViewModel());
+  SL.I.registerFactory(() => CounterViewModel());
   // Or using other service locators like GetIt
   // GetIt.I.registerFactory<CounterViewModel>(() => CounterViewModel());
 }
@@ -174,18 +174,26 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 }
 ```
 
-## Built-in Service Locator (SimpleLocator)
-The package includes a simple built-in service locator called `SimpleLocator` that you can use to register and retrieve your `ViewModel` instances or other dependencies. This is useful for all kinds of applications that has a minimalistic dependency injection graph.
+## Built-in Service Locator (SL)
+The package includes a simple built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies. This is useful for all kinds of applications that has a minimalistic dependency injection graph.
 You can register your dependencies like this:
 
 ```dart
 import 'package:mvvm_kit/mvvm_kit.dart'; 
 
 // As factory
-simpleLocator.registerFactory(() => CounterViewModel());
-// Or registerSingleton if you want a singleton instance
-simpleLocator.registerSingleton(CounterRepository());
+SL.instance.registerFactory(() => CounterViewModel());
+// As singleton (Use the shortcut .I for convenience)
+SL.I.registerSingleton(() => CounterRepository());
 ```
+
+And retrieve any registered type like this:
+
+```dart
+final counterViewModel = SL.I.get<CounterViewModel>();
+```
+
+Ps: The ViewState class uses this service locator by default to create ViewModel instances. You can override the `createViewModel()` method to use a different dependency injection strategy if needed.
 
 ## Key Features
 

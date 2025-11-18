@@ -1,3 +1,9 @@
+## 0.10.0
+### Refactor
+- Updated ViewState to use resolveViewModel() method for ViewModel retrieval.
+- Updated README documentation to reflect changes in ViewState for ViewModel injection strategy.
+- Updated documentation for Service Locator.
+
 ## 0.9.1
 ### Docs
 - Added version badge to README.md and API documentation index.html for better visibility of the current package version.
@@ -7,7 +13,7 @@
 - Changed default ViewModel creation strategy in ViewState to use createViewModel() method.
   This allows easier integration with different dependency injection strategies.
 ### Service Locator
-- Added a simple built-in service locator `SL` for registering and retrieving ViewModel instances or other dependencies.
+- Added a minimalist built-in service locator `SL` for registering and retrieving ViewModel instances or other dependencies.
 - Updated README documentation to include examples of using the built-in service locator.
 ### Other Improvements
 - Updated example views to demonstrate different ViewModel injection strategies using the built-in service locator, Provider, and GetIt.

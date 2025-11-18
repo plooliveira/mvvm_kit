@@ -2,7 +2,8 @@
     <img src="mvvm_kit_logo.png" alt="mvvm_kit logo" width="500">
   </p>
 
-
+## Disclaimer
+This package is still in early development. While it is functional and can be used in production applications, there may be breaking changes in future releases as we continue to improve and refine the API.
 
 ## Overview
 

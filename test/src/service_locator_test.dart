@@ -16,6 +16,10 @@ void main() {
       sut = SL();
     });
 
+    tearDown(() {
+      sut.reset();
+    });
+
     test(
       'registerSingleton should return the same instance every time get is called',
       () {
@@ -30,6 +34,7 @@ void main() {
         expect(instance1, isA<_TestClass>());
         expect(instance2, isA<_TestClass>());
         expect(instance1, same(instance2));
+        sut.reset();
       },
     );
 
@@ -47,7 +52,7 @@ void main() {
         expect(instance1, isA<_TestClass>());
         expect(instance2, isA<_TestClass>());
         expect(instance1, isNot(same(instance2)));
-        sut.unregister<_TestClass>();
+        sut.reset();
       },
     );
 
@@ -66,6 +71,7 @@ void main() {
 
       // Assert
       expect(() => sut.get<_TestClass>(), throwsA(isA<StateError>()));
+      sut.reset();
     });
 
     test('reset should clear all registrations', () {
@@ -92,6 +98,7 @@ void main() {
 
       // Assert
       expect(instance1, isNot(same(instance2)));
+      sut.reset();
     });
 
     test('should overwrite a factory with a singleton', () {
@@ -105,6 +112,7 @@ void main() {
 
       // Assert
       expect(instance1, same(instance2));
+      sut.reset();
     });
 
     test('should register a concrete implementation for an abstract type', () {
@@ -116,6 +124,7 @@ void main() {
 
       // Assert
       expect(instance, isA<_ServiceImpl>());
+      sut.reset();
     });
   });
 }

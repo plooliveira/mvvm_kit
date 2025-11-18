@@ -1,3 +1,17 @@
+## 0.9.0
+### Breaking Changes
+- Changed default ViewModel creation strategy in ViewState to use createViewModel() method.
+  This allows easier integration with different dependency injection strategies.
+### Service Locator
+- Added a simple built-in service locator `SL` for registering and retrieving ViewModel instances or other dependencies.
+- Updated README documentation to include examples of using the built-in service locator.
+### Other Improvements
+- Updated example views to demonstrate different ViewModel injection strategies using the built-in service locator, Provider, and GetIt.
+- Improved code comments and documentation for better clarity on ViewModel management and dependency injection.
+- Added tests for ViewModel, RepositoryData, and HotswapLiveData.
+
+
+
 ## 0.8.4
 ### Doc
 - Small improvement to API documentation layout

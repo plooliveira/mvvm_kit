@@ -2,7 +2,8 @@
     <img src="mvvm_kit_logo.png" alt="mvvm_kit logo" width="500">
   </p>
 
-
+## Disclaimer
+This package is still in early development. While it is functional and can be used in production applications, there may be breaking changes in future releases as we continue to improve and refine the API.
 
 ## Overview
 
@@ -47,7 +48,6 @@ class CounterViewModel extends ViewModel {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
-import 'package:get_it/get_it.dart';
 
 import 'counter_viewmodel.dart';
 
@@ -59,8 +59,10 @@ class CounterView extends StatefulWidget {
 }
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
-   @override
-  final CounterViewModel viewModel = GetIt.I<CounterViewModel>(); // You can use GetIt or any other service locator
+  // By default, ViewState uses a built-in service locator for dependency injection.
+  // You can override createViewModel() to provide a different injection strategy. e.g. GetIt, Provider, etc.
+  // @override
+  // CounterViewModel createViewModel() => GetIt.I<CounterViewModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +87,24 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
       ),
     );
   }
+}
+```
+
+Don't forget to register your `CounterViewModel` in the service locator before running the app:
+
+```dart
+import 'counter_viewmodel.dart';
+import 'package:mvvm_kit/mvvm_kit.dart';
+
+void setupLocator() {
+  SL.I.registerFactory(() => CounterViewModel());
+  // Or using other service locators like GetIt
+  // GetIt.I.registerFactory<CounterViewModel>(() => CounterViewModel());
+}
+
+void main() {
+  setupLocator();
+  runApp(const MyApp());
 }
 ```
 
@@ -117,7 +137,6 @@ class PersonViewModel extends ViewModel {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
-import 'package:get_it/get_it.dart';
 
 import 'person_viewmodel.dart';
 
@@ -129,8 +148,6 @@ class PersonView extends StatefulWidget {
 }
 
 class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
-   @override
-  final PersonViewModel viewModel = GetIt.I<PersonViewModel>(); // You can use GetIt or any other service locator
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +173,27 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
   }
 }
 ```
+
+## Built-in Service Locator (SL)
+The package includes a simple built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies. This is useful for all kinds of applications that has a minimalistic dependency injection graph.
+You can register your dependencies like this:
+
+```dart
+import 'package:mvvm_kit/mvvm_kit.dart'; 
+
+// As factory
+SL.instance.registerFactory(() => CounterViewModel());
+// As singleton (Use the shortcut .I for convenience)
+SL.I.registerSingleton(() => CounterRepository());
+```
+
+And retrieve any registered type like this:
+
+```dart
+final counterViewModel = SL.I.get<CounterViewModel>();
+```
+
+Ps: The ViewState class uses this service locator by default to create ViewModel instances. You can override the `createViewModel()` method to use a different dependency injection strategy if needed.
 
 ## Key Features
 

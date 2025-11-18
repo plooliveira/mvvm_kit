@@ -14,8 +14,8 @@ topics:
   - reactive
 
 environment:
-  sdk: ^3.9.0
-  flutter: ">=1.17.0"
+  sdk: ^3.10.0
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:

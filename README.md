@@ -65,9 +65,9 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
   // By default, ViewState uses a built-in service locator for dependency injection.
-  // You can override createViewModel() to provide a different injection strategy. e.g. GetIt, Provider, etc.
+  // You can override resolveViewModel() to provide a different injection strategy. e.g. Constructor injection, GetIt, Provider, etc.
   // @override
-  // CounterViewModel createViewModel() => GetIt.I<CounterViewModel>();
+  // CounterViewModel resolveViewModel() => GetIt.I();
 
   @override
   Widget build(BuildContext context) {
@@ -179,8 +179,9 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 }
 ```
 
-## Built-in Service Locator (SL)
-The package includes a simple built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies. This is useful for all kinds of applications that has a minimalistic dependency injection graph.
+## Minimalist built-in service Locator (SL)
+The package includes a minimalist built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies.
+There is no asynchronous support, no scopes, no modules, no tags support. You can register factories and singletons only. This is useful for all kinds of applications that has a straightforward dependency graph.
 You can register your dependencies like this:
 
 ```dart
@@ -198,7 +199,20 @@ And retrieve any registered type like this:
 final counterViewModel = SL.I.get<CounterViewModel>();
 ```
 
-Ps: The ViewState class uses this service locator by default to create ViewModel instances. You can override the `createViewModel()` method to use a different dependency injection strategy if needed.
+Or by type inference:
+
+```dart
+final CounterViewModel counterViewModel = SL.I.get();
+```
+
+Ps: The ViewState class uses this service locator by default to create ViewModel instances. You can override the `resolveViewModel()` method to use a different dependency injection strategy if needed.
+```dart
+  class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
+    @override
+    CounterViewModel resolveViewModel() => widget.viewModel;
+    // ...
+  }
+```
 
 ## Key Features
 
@@ -208,6 +222,8 @@ Ps: The ViewState class uses this service locator by default to create ViewModel
 - **DataScope**: Container that automatically disposes LiveData instances when no longer needed, preventing memory leaks
 - **Transformations**: `transform()`, `filtered()`, `mirror()` for data manipulation
 - **HotswapLiveData**: Dynamically switch between data sources
+- **RepositoryData**: Pattern for integrating data layers with caching and refreshing capabilities
+- **Built-in Service Locator**: Minimalist service locator for dependency injection
 
 ## Documentation
 

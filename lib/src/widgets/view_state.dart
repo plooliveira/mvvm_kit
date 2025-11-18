@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_kit/src/simple_locator.dart';
+import 'package:mvvm_kit/src/service_locator.dart';
 import '../viewmodel.dart';
 
 /// Base state for MVVM views.
@@ -34,10 +34,10 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
   /// By default, it retrieves the ViewModel from the service locator.
   /// Override this method to provide a custom ViewModel instance using a different method. e.g. GetIt, Provider, Constructor injection etc.
   @protected
-  T createViewModel() => SL.instance.get<T>();
+  T resolveViewModel() => SL.I.get();
 
   /// The ViewModel instance associated with this ViewState.
-  late final T viewModel = createViewModel();
+  late final T viewModel = resolveViewModel();
 
   @override
   void initState() {

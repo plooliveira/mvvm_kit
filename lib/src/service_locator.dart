@@ -13,9 +13,27 @@ class _Entry {
   _Entry({this.factory, this.instance, required this.isSingleton});
 }
 
+/// A minimalist service locator for straightforward dependency injection.
+/// No async support, no scopes, no modules, no tags. Just simple registration and retrieval of instances.
+///
+/// Usage:
+/// ```dart
+/// // Registering a factory (new instance each time)
+/// SL.I.registerFactory<MyService>(() => MyServiceImpl());
+///
+/// // Registering a singleton (same instance every time)
+/// SL.I.registerSingleton<MyRepository>(() => MyRepositoryImpl());
+///
+/// // Retrieving instances
+/// final service = SL.I.get<MyService>();
+/// final repository = SL.I.get<MyRepository>();
+/// ```
+/// Throws a [StateError] if the requested type is not registered.
 class SL {
-  /// Singleton instance of SimpleLocator.
+  /// Singleton instance.
   static final SL instance = SL._internal();
+
+  /// Shortcut to the singleton instance.
   static SL get I => instance;
 
   SL._internal();

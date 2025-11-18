@@ -47,6 +47,7 @@ void main() {
         expect(instance1, isA<_TestClass>());
         expect(instance2, isA<_TestClass>());
         expect(instance1, isNot(same(instance2)));
+        sut.unregister<_TestClass>();
       },
     );
 

@@ -1,11 +1,20 @@
+  <br/>
+  <br/>
   <p align="center">
     <img src="mvvm_kit_logo.png" alt="mvvm_kit logo" width="500">
   </p>
 
+<br/>
+
+[![ ](https://img.shields.io/pub/v/mvvm_kit.svg)](https://pub.dev/packages/mvvm_kit) &nbsp; [![Build Status](https://github.com/plooliveira/mvvm_kit/actions/workflows/test.yaml/badge.svg)](https://github.com/plooliveira/mvvm_kit/actions)
+
+
 ## Disclaimer
 This package is still in early development. While it is functional and can be used in production applications, there may be breaking changes in future releases as we continue to improve and refine the API.
 
-## Overview
+## Overview 
+
+
 
 This package provides a simple and lightweight implementation of the MVVM (Model-View-ViewModel) pattern for Flutter applications. It is designed to be easy to use and to help you write clean, testable, and maintainable code.
 
@@ -15,12 +24,8 @@ The package also provides a `ViewModel` class, which is a base class for your vi
 
 ## Installation
 
-To use this package, add `mvvm_kit` as a dependency in your `pubspec.yaml` file.
+To use this package, add `mvvm_kit` as a dependency running `pub add mvvm_kit` or by adding it to your `pubspec.yaml`.
 
-```yaml
-dependencies:
-  mvvm_kit: ^0.8.0
-```
 
 ## Usage
 

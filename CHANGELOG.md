@@ -1,3 +1,7 @@
+## 0.9.1
+### Docs
+- Added version badge to README.md and API documentation index.html for better visibility of the current package version.
+
 ## 0.9.0
 ### Breaking Changes
 - Changed default ViewModel creation strategy in ViewState to use createViewModel() method.

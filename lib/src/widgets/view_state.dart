@@ -34,7 +34,7 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
   /// By default, it retrieves the ViewModel from the service locator.
   /// Override this method to provide a custom ViewModel instance using a different method. e.g. GetIt, Provider, Constructor injection etc.
   @protected
-  T createViewModel() => simpleLocator.get<T>();
+  T createViewModel() => SL.instance.get<T>();
 
   /// The ViewModel instance associated with this ViewState.
   late final T viewModel = createViewModel();

@@ -13,7 +13,14 @@ class _Entry {
   _Entry({this.factory, this.instance, required this.isSingleton});
 }
 
-class SimpleLocator {
+class SL {
+  /// Singleton instance of SimpleLocator.
+  static final SL instance = SL._internal();
+  static SL get I => instance;
+
+  SL._internal();
+  factory SL() => instance;
+
   final Map<Type, _Entry> _entries = HashMap();
 
   /// Register a factory that will produce a new instance each time.
@@ -78,6 +85,3 @@ class SimpleLocator {
   /// Clear all registrations (useful in tests).
   void reset() => _entries.clear();
 }
-
-/// Global instance to use throughout the app/tests.
-final SimpleLocator simpleLocator = SimpleLocator();

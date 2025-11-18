@@ -10,10 +10,10 @@ class _ServiceImpl implements _AbstractService {}
 
 void main() {
   group('SimpleLocator', () {
-    late SimpleLocator sut;
+    late SL sut;
 
     setUp(() {
-      sut = SimpleLocator();
+      sut = SL();
     });
 
     test(

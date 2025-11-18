@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_kit/src/service_locator.dart';
+import 'package:mvvm_kit/src/simple_locator.dart';
 import '../viewmodel.dart';
 
 /// Base state for MVVM views.

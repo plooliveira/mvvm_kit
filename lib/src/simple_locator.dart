@@ -1,6 +1,8 @@
 // ...existing code...
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
+
 typedef FactoryFunc<T> = T Function();
 
 class _Entry {
@@ -21,7 +23,20 @@ class SimpleLocator {
 
   /// Register a singleton instance (same instance returned every time).
   void registerSingleton<T>(FactoryFunc<T> factory) {
-    _entries[T] = _Entry(instance: factory(), isSingleton: true);
+    final instance = factory();
+    if (instance == null) {
+      if (kDebugMode) {
+        debugPrint(
+          'Warning: Singleton factory for type $T returned null. '
+          'Make sure that this is intended.',
+        );
+      }
+    } else {
+      if (kDebugMode) {
+        debugPrint('Registered singleton instance of type $T: $instance');
+      }
+    }
+    _entries[T] = _Entry(instance: instance, isSingleton: true);
   }
 
   /// Unregister a type.
@@ -44,7 +59,20 @@ class SimpleLocator {
     if (entry.isSingleton) {
       return entry.instance as T;
     }
-    return (entry.factory!() as T);
+    final instance = entry.factory!();
+    if (instance == null) {
+      if (kDebugMode) {
+        debugPrint(
+          'Warning: Factory for type $T returned null. '
+          'Make sure that this is intended.',
+        );
+      }
+    } else {
+      if (kDebugMode) {
+        debugPrint('Created new instance of type $T: $instance');
+      }
+    }
+    return (instance as T);
   }
 
   /// Clear all registrations (useful in tests).

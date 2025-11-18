@@ -5,4 +5,4 @@ export 'src/live_data/live_data.dart';
 export 'src/widgets/view_state.dart';
 export 'src/scope/scope.dart';
 export "src/viewmodel.dart";
-export 'src/service_locator.dart';
+export 'src/simple_locator.dart';

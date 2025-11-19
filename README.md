@@ -179,7 +179,7 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 }
 ```
 
-## Minimalist built-in service Locator (SL)
+## Minimalist built-in service locator (SL)
 The package includes a minimalist built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies.
 There is no asynchronous support, no scopes, no modules, no tags support. You can register factories and singletons only. This is useful for all kinds of applications that has a straightforward dependency graph.
 You can register your dependencies like this:

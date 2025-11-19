@@ -1,6 +1,12 @@
-## 0.10.0
+## 0.10.2
+### Doc
+- Updated README. 
+
+## 0.10.1
 ### Refactor
-- Updated ViewState to use resolveViewModel() method for ViewModel retrieval.
+#### Breaking Changes
+  - Updated ViewState to use resolveViewModel() method for ViewModel retrieval.
+#### Other
 - Updated README documentation to reflect changes in ViewState for ViewModel injection strategy.
 - Updated documentation for Service Locator.
 

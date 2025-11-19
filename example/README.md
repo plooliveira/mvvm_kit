@@ -36,21 +36,9 @@ This project follows a **simple and pragmatic structure**, focused on demonstrat
 lib/
 ├── core/           # Settings, routes and shared components
 ├── data/           # Models, repositories and data layer
-├── view/           # Views and ViewModels organized by feature
+├── view/           # Views and ViewModels
 └── main.dart       # Application entry point
 ```
-
-### Scalability
-
-Although the structure is intentionally simple to facilitate learning, **it is perfectly scalable**. The project can be easily extended with:
-
-- Dependency injection (GetIt, Provider, etc.)
-- More complex routing management
-- Additional layers (use cases, domain, etc.)
-- Unit and integration tests
-- Other complementary design patterns
-
-The focus here is to **demonstrate mvvm_kit** without adding unnecessary complexity that could obscure the main concepts.
 
 ## 🚀 How to Run
 
@@ -76,10 +64,6 @@ Each example in the playground is independent and self-contained, allowing you t
 - Understand how to integrate mvvm_kit in different scenarios
 - See code organization best practices
 - Learn scalable architecture patterns
-
-## 📖 Complete Documentation
-
-For detailed code examples and complete `mvvm_kit` documentation, see the [main package README](../README.md).
 
 ---
 

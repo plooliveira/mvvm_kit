@@ -26,7 +26,7 @@ class TodosViewModel extends ViewModel {
         return list.where((t) => t.completed).toList();
     }
   });
-
+  
   late final activeCount = allTodos.transform(
     (todos) => todos.value.where((t) => !t.completed).length,
   );

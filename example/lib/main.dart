@@ -10,9 +10,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Register ViewModels using the built-in service locator
-  SL.I.registerFactory(() => CounterViewModel());
-  SL.I.registerFactory(() => ProductFormViewModel());
-  SL.I.registerFactory(() => ThemeViewModel());
+  SL.I.registerFactory((_) => CounterViewModel());
+  SL.I.registerFactory((_) => ProductFormViewModel());
+  SL.I.registerFactory((_) => ThemeViewModel());
 
   // Register GetIt dependencies for the Todo feature
   await TodosDependencies().setup();

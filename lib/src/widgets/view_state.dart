@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mvvm_kit/src/helpers/debugger.dart';
 import 'package:mvvm_kit/src/service_locator.dart';
 import '../viewmodel.dart';
 
@@ -53,11 +54,9 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
 
   void _disposeViewModel() {
     viewModel.dispose();
-    if (kDebugMode) {
-      debugPrint(
-        'Disposed ViewModel: ${viewModel.runtimeType}, from View: ${widget.runtimeType}',
-      );
-    }
+    debugLog(
+      'Disposed ViewModel: ${viewModel.runtimeType}, from View: ${widget.runtimeType}',
+    );
   }
 
   /// Synchronizes ViewModel.isActive with app lifecycle state. If you need to override, be sure to call super.didChangeAppLifecycleState.

@@ -10,7 +10,7 @@
 
 
 ## Disclaimer
-This package is still in early development. While it is functional and can be used in production applications, there may be breaking changes in future releases as we continue to improve and refine the API.
+This package is still in early development. While it is functional, there may be breaking changes in future releases as we continue to improve and refine the API. So please use it with caution in production applications.
 
 ## Overview 
 
@@ -181,7 +181,7 @@ class _PersonViewState extends ViewState<PersonViewModel, PersonView> {
 
 ## Minimalist built-in service locator (SL)
 The package includes a minimalist built-in service locator called `SL` that you can use to register and retrieve your `ViewModel` instances or other dependencies.
-There is no asynchronous support, no scopes, no modules, no tags support. You can register factories and singletons only. This is useful for all kinds of applications that has a straightforward dependency graph.
+There is no asynchronous support, no scopes, no modules, no tags support. You can register factories, singletons, or lazy singletons. This is useful for all kinds of applications that has a straightforward dependency graph.
 You can register your dependencies like this:
 
 ```dart
@@ -190,16 +190,35 @@ import 'package:mvvm_kit/mvvm_kit.dart';
 // As factory
 SL.instance.registerFactory(() => CounterViewModel());
 // As singleton (Use the shortcut .I for convenience)
-SL.I.registerSingleton(() => CounterRepository());
+SL.I.registerSingleton(CounterRepository());
+// As lazy singleton
+SL.I.registerLazySingleton(() => CounterService());
 ```
 
-And retrieve any registered type like this:
+You can resolve dependencies with constructor injection like this:
+
+```dart
+SL.I.registerSingleton(CounterRepository());
+SL.I.registerLazySingleton(() => CounterService());
+SL.I.registerFactory((i) => CounterViewModel(
+  repository: i(),
+  service: i(),
+));
+```
+
+And use abstract types or interfaces:
+
+```dart
+SL.I.registerSingleton<CounterRepository>(CounterRepositoryImpl());
+```
+
+To retrieve any registered type, use:
 
 ```dart
 final counterViewModel = SL.I.get<CounterViewModel>();
 ```
 
-Or by type inference:
+or by type inference:
 
 ```dart
 final CounterViewModel counterViewModel = SL.I.get();

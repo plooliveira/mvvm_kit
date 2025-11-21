@@ -1,3 +1,7 @@
+## 0.11.2
+### Doc
+- Updated README
+
 ## 0.11.1
 ### Doc
 - Updated README

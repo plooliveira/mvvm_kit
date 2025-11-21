@@ -12,7 +12,7 @@
 ⚡️ Granular reactivity <br/>
 🧪 Highly testable <br/>
 👀 Predictable <br/>
-🛡️ Memory safe <br/>
+🛡️ Safe <br/>
 🧩 Versatile <br/>
 📈 Scalable <br/>
 💜 Enjoyable <br/>

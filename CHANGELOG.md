@@ -3,7 +3,7 @@
 - Updated README
 
 ### Tests
-- Updated tests suite to achieve 100% coverage
+- Updated test suite to achieve 100% coverage
 
 ## 0.11.0
 ### Breaking Changes

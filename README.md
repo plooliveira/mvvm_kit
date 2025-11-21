@@ -23,8 +23,6 @@ This package is still in early development. While it is functional, there may be
 
 ## Overview 
 
-
-
 This package provides a simple and lightweight implementation of the MVVM (Model-View-ViewModel) pattern for Flutter applications. It is designed to be easy to use and to help you write clean, testable, and maintainable code.
 
 The core of the package is the `LiveData` class, which is an observable data holder that can be observed by UI components. When the data changes, the UI is automatically updated.

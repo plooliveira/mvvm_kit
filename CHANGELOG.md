@@ -1,8 +1,7 @@
 ## 0.11.0
 ### Breaking Changes
 - `registerSingleton` now requires an instance instead of a factory function.
-- Factory functions in Service Locator now has a injection parameter: a function to get dependencies by type.
-  This allows inject dependencies more easily.
+- Factory functions in Service Locator now has a injection parameter: a function to get dependencies by type. This allows inject dependencies more easily.
 ### 
 
 

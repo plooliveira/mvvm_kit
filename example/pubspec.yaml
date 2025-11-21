@@ -10,9 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   go_router: ^17.0.0
-  objectbox: ^5.0.2
   mvvm_kit:
     path: ../
+  objectbox: ^5.0.2
   objectbox_flutter_libs: ^5.0.2 
   provider: ^6.1.5+1
   get_it: ^9.0.5

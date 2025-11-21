@@ -1,6 +1,5 @@
 import 'package:example_playground/view/counter/counter_viewmodel.dart';
 import 'package:example_playground/view/form/product_form_viewmodel.dart';
-import 'package:example_playground/view/theme_switcher/theme_viewmodel.dart';
 import 'package:example_playground/view/todo/todo_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
@@ -10,9 +9,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Register ViewModels using the built-in service locator
-  SL.I.registerFactory(() => CounterViewModel());
-  SL.I.registerFactory(() => ProductFormViewModel());
-  SL.I.registerFactory(() => ThemeViewModel());
+  SL.I.registerFactory((_) => CounterViewModel());
+  SL.I.registerFactory((_) => ProductFormViewModel());
 
   // Register GetIt dependencies for the Todo feature
   await TodosDependencies().setup();

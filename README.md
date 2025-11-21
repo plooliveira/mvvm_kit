@@ -8,6 +8,15 @@
 
 [![ ](https://img.shields.io/pub/v/mvvm_kit.svg)](https://pub.dev/packages/mvvm_kit) &nbsp; [![Build Status](https://github.com/plooliveira/mvvm_kit/actions/workflows/test.yaml/badge.svg)](https://github.com/plooliveira/mvvm_kit/actions)
 
+✅ Recommended architecture <br/>
+⚡️ Granular reactivity <br/>
+🧪 Highly testable <br/>
+👀 Predictable <br/>
+🛡️ Memory safe <br/>
+🧩 Versatile <br/>
+📈 Scalable <br/>
+✨ Simple <br/>
+💜 Enjoyable <br/>
 
 ## Disclaimer
 This package is still in early development. While it is functional, there may be breaking changes in future releases as we continue to improve and refine the API. So please use it with caution in production applications.

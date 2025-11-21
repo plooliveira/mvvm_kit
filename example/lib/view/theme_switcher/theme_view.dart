@@ -28,10 +28,10 @@ class ThemeView extends StatefulWidget {
 }
 
 class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
-  // Override createViewModel() to plug a
+  // Override resolveViewModel() to plug a
   // different injection strategy. In this case, Provider.
   @override
-  ThemeViewModel createViewModel() => context.read<ThemeViewModel>();
+  ThemeViewModel resolveViewModel() => context.read<ThemeViewModel>();
 
   @override
   Widget build(BuildContext context) {

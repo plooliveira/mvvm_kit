@@ -20,7 +20,7 @@ class _AddTodoBottomSheetState
   final _focusNode = FocusNode();
 
   @override
-  AddTodoViewModel createViewModel() =>
+  AddTodoViewModel resolveViewModel() =>
       widget.viewModel ?? GetIt.I<AddTodoViewModel>();
 
   @override

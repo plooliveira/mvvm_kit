@@ -26,14 +26,14 @@ class TodosView extends StatefulWidget {
 }
 
 class _TodosViewState extends ViewState<TodosViewModel, TodosView> {
-  // Override createViewModel() to plug a
+  // Override resolveViewModel() to plug a
   // different injection strategy. In this case, GetIt.
   // If the type is registered as a factory, each ViewState will get its own instance
   // (i.e. it is not a singleton). That is fine because the underlying data
   // source (ObjectBox) is shared and reactive — multiple ViewModel instances will
   // still observe the same data changes.
   @override
-  TodosViewModel createViewModel() => GetIt.I<TodosViewModel>();
+  TodosViewModel resolveViewModel() => GetIt.I<TodosViewModel>();
 
   @override
   Widget build(BuildContext context) {

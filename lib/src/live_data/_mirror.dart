@@ -27,7 +27,8 @@ class _NotifierData<T, B extends ChangeNotifier> extends LiveData<T> {
 
   @override
   void reload() {
-    _onBaseChanged();
+    _value = onTransform(base);
+    notifyListeners();
   }
 
   void _onBaseChanged() {

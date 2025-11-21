@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mvvm_kit/mvvm_kit.dart';
 
+import 'package:mocktail/mocktail.dart';
+
+class MockMutableLiveData<T> extends Mock implements MutableLiveData<T> {}
+
 void main() {
   group('LiveRepositoryData', () {
     test('should wrap LiveData source and delegate value access', () {
@@ -41,6 +45,17 @@ void main() {
       expect(transformed.value, 30);
 
       source.dispose();
+    });
+
+    test('should call dispose on source when disposed', () {
+      final source = MockMutableLiveData<int>();
+      final repo = LiveRepositoryData(source);
+
+      when(() => source.dispose()).thenReturn(null);
+
+      repo.dispose();
+
+      verify(() => source.dispose()).called(1);
     });
   });
 
@@ -95,6 +110,17 @@ void main() {
       expect(repo.source.changeDetector, equals(alwaysChanged));
 
       repo.source.dispose();
+    });
+
+    test('should call dispose on source when disposed', () {
+      final source = MockMutableLiveData<int>();
+      final repo = MutableRepositoryData(source: source);
+
+      when(() => source.dispose()).thenReturn(null);
+
+      repo.dispose();
+
+      verify(() => source.dispose()).called(1);
     });
   });
 

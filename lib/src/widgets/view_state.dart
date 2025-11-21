@@ -66,10 +66,12 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
     switch (state) {
       case AppLifecycleState.resumed:
         viewModel.isActive = true;
+        break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.hidden:
       case AppLifecycleState.paused:
         viewModel.isActive = false;
+        break;
       default:
       // Nothing to do here
     }
@@ -83,9 +85,6 @@ abstract class _BaseState<W extends StatefulWidget> extends State<W>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
-
-  @override
-  Widget build(BuildContext context) => Placeholder();
 
   @override
   void dispose() {

@@ -41,6 +41,19 @@ class NullableInitialLiveData<T> extends LiveData<T?> {
   }
 }
 
+class TestMutableLiveData<T> extends MutableLiveData<T> {
+  TestMutableLiveData(super.value);
+
+  @override
+  bool get hasListeners => super.hasListeners;
+}
+
+class ThrowingIterable extends Iterable<int> {
+  @override
+  Iterator<int> get iterator =>
+      throw Exception('Intentional error for testing');
+}
+
 // Helper function to dispose multiple ChangeNotifiers at once
 void disposeAll(List<ChangeNotifier> disposables) {
   for (final item in disposables) {
@@ -153,6 +166,13 @@ void main() {
       expect(callCount, 2); // Should be called again
       expect(receivedValue, 10);
     });
+
+    test('call() should return the current value', () {
+      final liveData = MutableLiveData(42);
+      expect(liveData(), 42);
+      liveData.value = 100;
+      expect(liveData(), 100);
+    });
   });
 
   group('MutableLiveData Functionality', () {
@@ -213,6 +233,15 @@ void main() {
 
       expect(callCount, 2); // Should be notified
       expect(liveData.value, [1, 2, 3, 4]);
+    });
+
+    test('immutable getter should return the same instance as LiveData', () {
+      final mutable = MutableLiveData(10);
+      final immutable = mutable.immutable;
+
+      expect(immutable, same(mutable));
+      expect(immutable, isA<LiveData<int>>());
+      // Static type check is implicit by assignment to LiveData variable
     });
   });
 
@@ -289,6 +318,22 @@ void main() {
         expect(callCount, 1); // DeepEquality should treat as equal
       },
     );
+
+    test(
+      'should fallback to standard equality when DeepCollectionEquality throws',
+      () {
+        final liveData = MutableLiveData<dynamic>(ThrowingIterable());
+        int callCount = 0;
+        liveData.subscribe((_) => callCount++);
+
+        // This should trigger the catch block in _defaultChangeDetector
+        // because DeepCollectionEquality will try to iterate and fail.
+        // Then it falls back to != which returns true for different instances.
+        liveData.value = ThrowingIterable();
+
+        expect(callCount, 2);
+      },
+    );
   });
 
   group('LiveData Extensions', () {
@@ -316,6 +361,9 @@ void main() {
           (dynamic i) => sum += i as int,
         ); // Workaround for type issue
         expect(sum, 6);
+
+        final expanded = liveData.expand((i) => [i, i]).toList();
+        expect(expanded, [1, 1, 2, 2, 3, 3]);
       });
 
       test('filtered should create a LiveData that filters items', () {
@@ -335,6 +383,20 @@ void main() {
         expect(receivedValue, [2, 4, 6, 8]);
       });
 
+      test('filtered should remove listener from source when disposed', () {
+        final source = TestMutableLiveData([1, 2, 3]);
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isFalse);
+
+        final filtered = source.filtered((i) => i.isEven);
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isTrue);
+
+        filtered.dispose();
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isFalse);
+      });
+
       test('notNull should create a LiveData that filters out nulls', () {
         final source = MutableLiveData<List<int?>>([1, null, 3, null, 5]);
         final notNullFiltered = source.notNull();
@@ -350,6 +412,42 @@ void main() {
         // Update source and check if filtered LiveData updates
         source.value = [null, 2, 3, 4, null, 6];
         expect(receivedValue, [2, 3, 4, 6]);
+      });
+
+      test('notNull should remove listener from source when disposed', () {
+        final source = TestMutableLiveData<List<int?>>([1, null]);
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isFalse);
+
+        final notNullFiltered = source.notNull();
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isTrue);
+
+        notNullFiltered.dispose();
+        // ignore: invalid_use_of_protected_member
+        expect(source.hasListeners, isFalse);
+      });
+    });
+
+    group('Mirror', () {
+      test('should mirror value from source', () {
+        final source = MutableLiveData(10);
+        final mirror = source.mirror();
+        expect(mirror.value, 10);
+        source.value = 20;
+        expect(mirror.value, 20);
+      });
+
+      test('reload should notify listeners even if value is unchanged', () {
+        final source = MutableLiveData(10);
+        final mirror = source.mirror();
+
+        int callCount = 0;
+        mirror.subscribe((_) => callCount++);
+        expect(callCount, 1); // Initial
+
+        mirror.reload();
+        expect(callCount, 2); // Should notify
       });
     });
   });
@@ -422,11 +520,11 @@ void main() {
       test('should remove listener from ValueNotifier when disposed', () {
         final notifier = ValueNotifier<int>(10);
         final liveData = LiveData.fromValueNotifier(notifier);
-
+        // ignore: invalid_use_of_protected_member
         expect(notifier.hasListeners, isTrue);
 
         liveData.dispose();
-
+        // ignore: invalid_use_of_protected_member
         expect(notifier.hasListeners, isFalse);
       });
 

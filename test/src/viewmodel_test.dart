@@ -277,6 +277,34 @@ void main() {
     test('isLoading should be managed by dataScope', () {
       expect(viewModel.scope.items.contains(viewModel.isLoading), true);
     });
+
+    test('executeAsync should manage isLoading state correctly', () async {
+      expect(viewModel.isLoading.value, false);
+
+      final future = viewModel.executeAsync(() async {
+        expect(viewModel.isLoading.value, true);
+        await Future.delayed(const Duration(milliseconds: 50));
+        return 42;
+      });
+
+      expect(viewModel.isLoading.value, true);
+      final result = await future;
+      expect(result, 42);
+      expect(viewModel.isLoading.value, false);
+    });
+
+    test('executeAsync should rethrow error and reset isLoading', () async {
+      expect(viewModel.isLoading.value, false);
+
+      final future = viewModel.executeAsync(() async {
+        expect(viewModel.isLoading.value, true);
+        throw Exception('Test error');
+      });
+
+      expect(viewModel.isLoading.value, true);
+      await expectLater(future, throwsException);
+      expect(viewModel.isLoading.value, false);
+    });
   });
 
   group('ViewModel - Dispose & Resource Management', () {

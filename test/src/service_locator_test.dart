@@ -139,6 +139,17 @@ void main() {
         throwsA(isA<StateError>()),
       );
     });
+
+    test(
+      'registerLazySingleton without overwrite when exists should throw',
+      () {
+        sut.registerLazySingleton((_) => _TestClass());
+        expect(
+          () => sut.registerLazySingleton((_) => _TestClass()),
+          throwsA(isA<StateError>()),
+        );
+      },
+    );
     // ...existing code...
 
     test('unregister should remove a registration', () {

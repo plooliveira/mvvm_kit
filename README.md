@@ -15,7 +15,6 @@
 🛡️ Memory safe <br/>
 🧩 Versatile <br/>
 📈 Scalable <br/>
-✨ Simple <br/>
 💜 Enjoyable <br/>
 
 ## Disclaimer

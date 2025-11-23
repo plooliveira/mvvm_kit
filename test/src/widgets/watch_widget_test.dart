@@ -66,12 +66,12 @@ void main() {
 
       // Changes the first LiveData
       viewModel.name.value = 'Jane';
-      await tester.pump();
+      await tester.pump(Duration.zero);
       expect(find.text('Jane is 30'), findsOneWidget);
 
       // Changes the second LiveData
       viewModel.age.value = 31;
-      await tester.pump();
+      await tester.pump(Duration.zero);
       expect(find.text('Jane is 31'), findsOneWidget);
     });
 

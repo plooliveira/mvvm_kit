@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../live_data/live_data.dart';
 
@@ -89,6 +91,7 @@ class _GroupWatchState extends State<GroupWatch> with WatchMixin {
 /// unsubscribes in [dispose]. Calls [setState] when any notifier changes.
 mixin WatchMixin<T extends StatefulWidget> on State<T> {
   List<LiveData> get _notifiers;
+  bool _isUpdateScheduled = false;
 
   /// If overriding, be sure to call super.initState.
   @override
@@ -109,6 +112,11 @@ mixin WatchMixin<T extends StatefulWidget> on State<T> {
   }
 
   void _onNotifierChanged() {
-    setState(() {});
+    if (_isUpdateScheduled) return;
+    _isUpdateScheduled = true;
+    scheduleMicrotask(() {
+      _isUpdateScheduled = false;
+      if (mounted) setState(() {});
+    });
   }
 }

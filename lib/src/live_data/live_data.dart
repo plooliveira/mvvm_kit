@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../../mvvm_kit.dart';
@@ -13,15 +12,9 @@ part '_extensions.dart';
 ///
 /// Returns `true` if [a] and [b] are different values.
 typedef ChangeDetector<T> = bool Function(T a, T b);
-const _deepEquality = DeepCollectionEquality();
 
 bool _defaultChangeDetector<T>(T to, T from) {
-  if (identical(to, from)) return false;
-  try {
-    return !_deepEquality.equals(to, from);
-  } catch (_) {
-    return to != from;
-  }
+  return to != from;
 }
 
 /// An observable data holder for the MVVM pattern.
@@ -135,7 +128,11 @@ abstract class LiveData<T> extends ChangeNotifier {
   /// Function that determines if the value has changed.
   ///
   /// Override this to customize change detection behavior. By default,
-  /// uses deep equality for collections and standard equality for other types.
+  /// uses standard equality (`!=`).
+  ///
+  /// Note: For mutable objects like [List] or [Map], modifying the content
+  /// without changing the reference will NOT trigger a change. Use
+  /// [MutableLiveData.update] or create a new instance to notify observers.
   late ChangeDetector<T> changeDetector = _defaultChangeDetector;
 
   /// Subscribes to value changes with a callback function.
@@ -237,9 +234,13 @@ abstract class LiveData<T> extends ChangeNotifier {
 
 /// A mutable version of [LiveData] that allows changing its value.
 ///
-/// [MutableLiveData] extends [LiveData] with the ability to modify the
 /// stored value. When the value is set, all observers are automatically
 /// notified (if the value actually changed according to [changeDetector]).
+///
+/// **Important**: By default, change detection uses standard equality (`!=`).
+/// If you modify a mutable object (like a List) in place and assign it back,
+/// it will NOT trigger a notification because the reference is the same.
+/// Use [update] for in-place modifications.
 ///
 /// This is the most commonly used LiveData type in ViewModels for
 /// managing state that changes over time.
@@ -288,6 +289,9 @@ class MutableLiveData<T> extends LiveData<T> {
   /// Uses [changeDetector] to determine if the value has actually changed.
   /// Only notifies observers when the new value differs from the current one
   /// (unless [emitAll] was set to `true` in the constructor).
+  ///
+  /// **Note**: Assigning the same object reference (even if modified) will
+  /// NOT trigger a notification by default. Use [update] for that.
   ///
   /// Example:
   /// ```dart

@@ -246,94 +246,69 @@ void main() {
   });
 
   group('_defaultChangeDetector Behavior (tested via MutableLiveData)', () {
-    // List tests
-    test('should notify for lists of different sizes', () {
-      final liveData = MutableLiveData([1, 2]);
+    test('should notify for different values (primitives)', () {
+      final liveData = MutableLiveData(0);
       int callCount = 0;
       liveData.subscribe((_) => callCount++);
-      liveData.value = [1, 2, 3];
+      liveData.value++;
       expect(callCount, 2);
     });
 
-    test('should notify for lists with same size but different content', () {
+    test(
+      'should NOT notify when assigning the SAME object instance (List)',
+      () {
+        final list = [1, 2, 3];
+        final liveData = MutableLiveData(list);
+        int callCount = 0;
+        liveData.subscribe((_) => callCount++);
+
+        // Modify in place (should not trigger by itself)
+        list.add(4);
+        // Reassign same instance
+        liveData.value = list;
+
+        expect(callCount, 1); // Initial call only
+      },
+    );
+
+    test(
+      'should notify when assigning a NEW object instance with SAME content (List)',
+      () {
+        final liveData = MutableLiveData([1, 2, 3]);
+        int callCount = 0;
+        liveData.subscribe((_) => callCount++);
+
+        // New instance, same content
+        liveData.value = [1, 2, 3];
+
+        expect(
+          callCount,
+          2,
+        ); // Should notify because [1,2,3] != [1,2,3] is true
+      },
+    );
+
+    test('should notify when using .update() for in-place modification', () {
       final liveData = MutableLiveData([1, 2, 3]);
       int callCount = 0;
       liveData.subscribe((_) => callCount++);
-      liveData.value = [1, 0, 3]; // Changed content
+
+      liveData.update((l) => l.add(4));
+
       expect(callCount, 2);
+      expect(liveData.value, [1, 2, 3, 4]);
     });
 
-    test('should not notify for lists with same size and content', () {
-      final liveData = MutableLiveData([1, 2, 3]);
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = [1, 2, 3]; // Same content
-      expect(callCount, 1);
-    });
-
-    // Map tests
-    test('should notify for maps of different sizes', () {
+    test('should notify when assigning a NEW object instance (Map)', () {
       final liveData = MutableLiveData({'a': 1});
       int callCount = 0;
       liveData.subscribe((_) => callCount++);
-      liveData.value = {'a': 1, 'b': 2};
-      expect(callCount, 2);
+
+      // New instance, same content
+      liveData.value = {'a': 1};
+
+      expect(callCount, 2); // Should notify
     });
-
-    test('should notify for maps with different keys', () {
-      final liveData = MutableLiveData({'a': 1, 'b': 2});
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = {'a': 1, 'c': 2}; // Different key
-      expect(callCount, 2);
-    });
-
-    test('should notify for maps with different values', () {
-      final liveData = MutableLiveData({'a': 1, 'b': 2});
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = {'a': 1, 'b': 3}; // Different value
-      expect(callCount, 2);
-    });
-
-    test('should not notify for maps with same keys and values', () {
-      final liveData = MutableLiveData({'a': 1, 'b': 2});
-      int callCount = 0;
-      liveData.subscribe((_) => callCount++);
-      liveData.value = {'a': 1, 'b': 2}; // Same map
-      expect(callCount, 1);
-    });
-
-    test(
-      'should not notify for maps with different order but same content',
-      () {
-        final liveData = MutableLiveData({'a': 1, 'b': 2, 'c': 3});
-        int callCount = 0;
-        liveData.subscribe((_) => callCount++);
-        liveData.value = {
-          'c': 3,
-          'a': 1,
-          'b': 2,
-        }; // Different order, same content
-        expect(callCount, 1); // DeepEquality should treat as equal
-      },
-    );
-
-    test(
-      'should fallback to standard equality when DeepCollectionEquality throws',
-      () {
-        final liveData = MutableLiveData<dynamic>(ThrowingIterable());
-        int callCount = 0;
-        liveData.subscribe((_) => callCount++);
-
-        // This should trigger the catch block in _defaultChangeDetector
-        // because DeepCollectionEquality will try to iterate and fail.
-        // Then it falls back to != which returns true for different instances.
-        liveData.value = ThrowingIterable();
-
-        expect(callCount, 2);
-      },
-    );
   });
 
   group('LiveData Extensions', () {

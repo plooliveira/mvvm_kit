@@ -1,3 +1,15 @@
+## 0.12.0
+### Performance
+- **LiveData**: Changed default change detection from `DeepCollectionEquality` (O(N)) to simple equality `!=` (O(1)). This significantly improves performance for large collections.
+- **GroupWatch**: Implemented microtask debouncing to prevent multiple rebuilds when multiple notifiers change in the same frame.
+
+### Breaking Changes
+- **LiveData**: Assigning the same instance of a mutable object (e.g., `List`, `Map`) to a `MutableLiveData` will **NO LONGER** trigger a notification by default, even if the content changed.
+  - **Migration**: Use `.update()` for in-place modifications or create a new instance of the collection.
+
+### Dependencies
+- Removed `package:collection` dependency.
+
 ## 0.11.2
 ### Doc
 - Updated README

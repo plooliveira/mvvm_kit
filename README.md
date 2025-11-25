@@ -48,13 +48,34 @@ class CounterViewModel extends ViewModel {
   final _counter = mutable(0);
   LiveData<int> get counter => _counter;
 
-  void increment() {
-    _counter.value++;
-  }
+  void increment() => _counter.value++;
 }
 ```
 
-**2. Create a `View`**
+**2. Create a `View` using `ViewWidget`**
+
+This widget is a simple way to create a view. It uses the cascade state composition pattern where each widget maintains its own isolated ViewModel while cascading state changes to children through reactive constructor injection. See more details on the [ViewWidget](https://pub.dev/documentation/mvvm_kit/latest/mvvm_kit/ViewWidget-class.html) class documentation.
+ 
+```dart
+class CounterView extends ViewWidget<CounterViewModel> {
+  const CounterView({super.key});
+
+  @override
+  Widget build(BuildContext context, CounterViewModel viewModel) => Scaffold(
+    body: Watch(
+      viewModel.counter,
+      builder: (context, value) => Text('$value'),
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: viewModel.increment,
+      child: const Icon(Icons.add),
+    ),
+  );
+}
+```
+
+**2. Create a `View` using `ViewState`**
+To have full controll of the view lifecycle, you can use the `ViewState` class. See more details on the [ViewState](https://pub.dev/documentation/mvvm_kit/latest/mvvm_kit/ViewState-class.html) class documentation.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -84,12 +105,7 @@ class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
       body: Center(
         child: Watch(
           viewModel.counter,
-          builder: (context, value) {
-            return Text(
-              '$value',
-              style: Theme.of(context).textTheme.headlineMedium,
-            );
-          },
+          builder: (context, value) => Text('$value'),
         ),
       ),
       floatingActionButton: FloatingActionButton(

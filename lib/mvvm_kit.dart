@@ -6,3 +6,4 @@ export 'src/widgets/view_state.dart';
 export 'src/scope/scope.dart';
 export "src/viewmodel.dart";
 export 'src/service_locator.dart';
+export 'src/widgets/view_widget.dart';

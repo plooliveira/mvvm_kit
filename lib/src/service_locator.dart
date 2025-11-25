@@ -63,11 +63,11 @@ class SL {
     debugLog(
       'Warning: Singleton factory for type $T returned null. '
       'Make sure that this is intended.',
-      ifTrue: instance == null,
+      condition: instance == null,
     );
     debugLog(
       'Warning: Overwriting existing registration for type $T in locator.',
-      ifTrue: _entries[T] != null,
+      condition: _entries[T] != null,
     );
     debugLog('Registered singleton instance of type $T: $instance');
 
@@ -89,7 +89,7 @@ class SL {
 
     debugLog(
       'Warning: Overwriting existing registration for type $T in locator.',
-      ifTrue: _entries[T] != null,
+      condition: _entries[T] != null,
     );
 
     debugLog('Registered lazy singleton factory for type $T');
@@ -126,7 +126,7 @@ class SL {
     debugLog(
       'Warning: Factory for type $T returned null. '
       'Make sure that this is intended.',
-      ifTrue: instance == null,
+      condition: instance == null,
     );
     debugLog('Created new instance of type $T: $instance');
 

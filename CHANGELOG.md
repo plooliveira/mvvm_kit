@@ -1,3 +1,20 @@
+## 0.15.0
+### Features
+- **ViewWidget**: Introduced `ViewWidget` as a simplified alternative to `ViewState` for common use cases.
+  - Streamlined API with just `build()` and optional `onInit()` methods
+  - Automatic ViewModel lifecycle management (initialization and disposal)
+  - Automatic LiveData scope cleanup when widget is disposed
+  - Enables Cascade State Composition (CSC) pattern where each widget maintains isolated state while reactively injecting data to children via constructor props
+  - Override `resolveViewModel()` for custom ViewModel injection (useful for testing)
+
+### Documentation
+- Added comprehensive documentation for ViewWidget
+- Updated `ViewState` documentation to clarify when to use it vs `ViewWidget`
+- Improved README with examples of both `ViewWidget` and `ViewState` usage
+
+### Refactor
+- Renamed `debugLog` parameter from `ifTrue` to `condition` for better clarity
+
 ## 0.12.0
 ### Performance
 - **LiveData**: Changed default change detection from `DeepCollectionEquality` (O(N)) to simple equality `!=` (O(1)). This significantly improves performance for large collections.

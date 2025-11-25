@@ -12,16 +12,11 @@ class CounterRoute extends GoRoute {
       );
 }
 
-class CounterView extends StatefulWidget {
+class CounterView extends ViewWidget<CounterViewModel> {
   const CounterView({super.key});
 
   @override
-  State<CounterView> createState() => _CounterViewState();
-}
-
-class _CounterViewState extends ViewState<CounterViewModel, CounterView> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, CounterViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(title: const Text('Counter Example')),
       body: Center(

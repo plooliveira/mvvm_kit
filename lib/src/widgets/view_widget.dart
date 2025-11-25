@@ -51,7 +51,7 @@ abstract class ViewWidget<T extends ViewModel> extends StatefulWidget {
   /// Override this method to provide a custom [ViewModel] instance.
   /// By default, it retrieves the [ViewModel] from the service locator.
   /// Override this method to provide a custom [ViewModel] instance using a different method. e.g. GetIt, Provider, Constructor injection etc.
-  T? resolveViewModel() => null;
+  T? resolveViewModel(BuildContext context) => null;
 
   /// Override this method to provide a [Widget] to be built.
   /// ```dart
@@ -100,7 +100,7 @@ class _ViewWidgetAdapter<V extends ViewModel, W extends ViewWidget<V>>
     extends ViewState<V, W> {
   @override
   V resolveViewModel() {
-    return widget.resolveViewModel() ?? super.resolveViewModel();
+    return widget.resolveViewModel(context) ?? super.resolveViewModel();
   }
 
   @override

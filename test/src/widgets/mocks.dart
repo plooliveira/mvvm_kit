@@ -191,7 +191,7 @@ class CustomResolveViewWidget extends ViewWidget<CounterViewModel> {
   const CustomResolveViewWidget({super.key, this.customViewModel});
 
   @override
-  CounterViewModel? resolveViewModel() => customViewModel;
+  CounterViewModel? resolveViewModel(BuildContext context) => customViewModel;
 
   @override
   Widget build(BuildContext context, CounterViewModel viewModel) {

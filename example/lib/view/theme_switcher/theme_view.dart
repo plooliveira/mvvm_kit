@@ -20,21 +20,17 @@ class ThemeRoute extends GoRoute {
       );
 }
 
-class ThemeView extends StatefulWidget {
+class ThemeView extends ViewWidget<ThemeViewModel> {
   const ThemeView({super.key});
 
-  @override
-  State<ThemeView> createState() => _ThemeViewState();
-}
-
-class _ThemeViewState extends ViewState<ThemeViewModel, ThemeView> {
   // Override resolveViewModel() to plug a
   // different injection strategy. In this case, Provider.
   @override
-  ThemeViewModel resolveViewModel() => context.read<ThemeViewModel>();
+  ThemeViewModel resolveViewModel(BuildContext context) =>
+      context.read<ThemeViewModel>();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ThemeViewModel viewModel) {
     // Reactive Watch that rebuilds when current theme changes
     return Watch(
       viewModel.currentTheme,

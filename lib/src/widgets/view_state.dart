@@ -11,6 +11,11 @@ import '../viewmodel.dart';
 /// * Responds to app lifecycle changes (background/foreground)
 /// * Disposes the ViewModel when the widget is disposed
 ///
+/// This allows you to have full control of the view lifecycle, useful when you need
+/// to override lifecycle methods (didUpdateWidget, didChangeDependencies, etc.) or
+/// manage complex view logic like animations, controllers, or mixins.
+/// For more simple use cases, consider using [ViewWidget].
+///
 /// Example:
 /// ```dart
 /// class _CounterViewState extends ViewState<CounterViewModel, CounterView> {

@@ -18,14 +18,9 @@ class TodosRoute extends GoRoute {
       );
 }
 
-class TodosView extends StatefulWidget {
+class TodosView extends ViewWidget<TodosViewModel> {
   const TodosView({super.key});
 
-  @override
-  State<TodosView> createState() => _TodosViewState();
-}
-
-class _TodosViewState extends ViewState<TodosViewModel, TodosView> {
   // Override resolveViewModel() to plug a
   // different injection strategy. In this case, GetIt.
   // If the type is registered as a factory, each ViewState will get its own instance
@@ -33,10 +28,11 @@ class _TodosViewState extends ViewState<TodosViewModel, TodosView> {
   // source (ObjectBox) is shared and reactive — multiple ViewModel instances will
   // still observe the same data changes.
   @override
-  TodosViewModel resolveViewModel() => GetIt.I<TodosViewModel>();
+  TodosViewModel resolveViewModel(BuildContext context) =>
+      GetIt.I<TodosViewModel>();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, TodosViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Todo List Example'),

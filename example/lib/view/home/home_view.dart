@@ -31,8 +31,18 @@ class HomeView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _ExampleCard(
+              title: '1. Counter (Cascade)',
+              description:
+                  'Basic ViewModel + LiveData and ViewWidget with cascade state',
+              icon: Icons.add_circle_outline,
+              onTap: () => context.push('/counter-cascade'),
+            ),
+
+            const SizedBox(height: 16),
+            _ExampleCard(
               title: '1. Counter',
-              description: 'Basic LiveData + Loading States',
+              description:
+                  'Basic ViewModel + LiveData + ViewState with loading states',
               icon: Icons.add_circle_outline,
               onTap: () => context.push('/counter'),
             ),

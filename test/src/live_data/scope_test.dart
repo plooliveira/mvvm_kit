@@ -328,11 +328,13 @@ void main() {
       () {
         final mirror = scope.bridgeFrom(source);
         expect(mirror.isDisposed, isFalse);
+        // ignore: invalid_use_of_protected_member
         expect(source.hasListeners, isTrue);
 
         scope.dispose();
 
         expect(mirror.isDisposed, isTrue);
+        // ignore: invalid_use_of_protected_member
         expect(source.hasListeners, isFalse);
       },
     );

@@ -40,11 +40,6 @@ class ChildCounter extends ViewWidget<CounterViewModel> {
   final int parentCounter;
 
   @override
-  void onUpdate(BuildContext context, CounterViewModel viewModel) {
-    print("Parent counter: $parentCounter");
-  }
-
-  @override
   Widget build(BuildContext context, CounterViewModel viewModel) => Scaffold(
     body: Watch(
       viewModel.counter,

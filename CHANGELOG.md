@@ -1,4 +1,4 @@
-## 0.15.0
+## 0.13.0
 ### Features
 - **ViewWidget**: Introduced `ViewWidget` as a simplified alternative to `ViewState` for common use cases.
   - Streamlined API with just `build()` and optional `onInit()` methods

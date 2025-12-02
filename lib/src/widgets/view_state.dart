@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/src/helpers/debugger.dart';
 import 'package:mvvm_kit/src/service_locator.dart';
@@ -43,15 +45,18 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
 
   /// The ViewModel instance associated with this ViewState.
   late final T viewModel = resolveViewModel();
+  bool _isUpdateScheduled = false;
 
   @override
   void initState() {
     super.initState();
+    viewModel.addListener(_onNotifierChanged);
     viewModel.isActive = true;
   }
 
   @override
   void dispose() {
+    viewModel.removeListener(_onNotifierChanged);
     _disposeViewModel();
     super.dispose();
   }
@@ -61,6 +66,15 @@ abstract class ViewState<T extends ViewModel, W extends StatefulWidget>
     debugLog(
       'Disposed ViewModel: ${viewModel.runtimeType}, from View: ${widget.runtimeType}',
     );
+  }
+
+  void _onNotifierChanged() {
+    if (_isUpdateScheduled) return;
+    _isUpdateScheduled = true;
+    scheduleMicrotask(() {
+      _isUpdateScheduled = false;
+      if (mounted) setState(() {});
+    });
   }
 
   /// Synchronizes ViewModel.isActive with app lifecycle state. If you need to override, be sure to call super.didChangeAppLifecycleState.

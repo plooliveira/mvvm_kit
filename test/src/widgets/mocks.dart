@@ -23,6 +23,29 @@ class TrackableCounterViewModel extends CounterViewModel {
   }
 }
 
+// ViewModel para rastrear notificações
+class TrackingViewModel extends ViewModel {
+  late final counter = mutable(0);
+}
+
+// View para rastrear builds
+class TrackingView extends StatefulWidget {
+  const TrackingView({super.key});
+
+  @override
+  State<TrackingView> createState() => TrackingViewState();
+}
+
+class TrackingViewState extends ViewState<TrackingViewModel, TrackingView> {
+  int buildCount = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    buildCount++;
+    return MaterialApp(home: Scaffold(body: Text('Build count: $buildCount')));
+  }
+}
+
 // View de teste para usar com ViewState
 class CounterView extends StatefulWidget {
   const CounterView({super.key});

@@ -1,3 +1,6 @@
+## 0.13.1
+- Update Doc
+
 ## 0.13.0
 ### Features
 - **ViewWidget**: Introduced `ViewWidget` as a simplified alternative to `ViewState` for common use cases.

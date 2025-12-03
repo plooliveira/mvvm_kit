@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mvvm_kit/src/helpers/debugger.dart';
 import 'package:mvvm_kit/src/service_locator.dart';

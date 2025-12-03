@@ -8,6 +8,7 @@
 
 [![ ](https://img.shields.io/pub/v/mvvm_kit.svg)](https://pub.dev/packages/mvvm_kit) &nbsp; [![Build Status](https://github.com/plooliveira/mvvm_kit/actions/workflows/test.yaml/badge.svg)](https://github.com/plooliveira/mvvm_kit/actions)
 
+✅ Recommended architecture <br/>
 ⚡️ Granular reactivity <br/>
 🧪 Highly testable <br/>
 👀 Predictable <br/>

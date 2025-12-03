@@ -1,7 +1,4 @@
 ## 0.13.1
-### Features
-- **ViewModel**: Make `ViewModel` extend `ChangeNotifier` and automatically rebuild `ViewState` on notifications. This gives the flexibility to update the entire view when a property changes.
-
 ### Doc
 - Updated README
 
